@@ -26,7 +26,7 @@ var Tree = new Class({
 
   createIndicator: function() {
     this.indicator = new Element('div', {
-      class: 'treeIndicator'
+      class: 'tree-indicator'
     }).inject(document.body);
   },
 

@@ -44,6 +44,7 @@ li.drag a {
   cursor: pointer;
 }
 
+/* the original element getting cloned and placed */
 .is-dragging {
   opacity: 0.2;
   transition: opacity 300ms ease;
@@ -56,13 +57,13 @@ li.drag a {
   padding: 0 10px;
 }
 
-.treeIndicator {
+.tree-indicator {
   position: absolute;
   height: 8px;
   z-index: 50;
 }
 
-.treeIndicator::before {
+.tree-indicator::before {
   content: '';
   position: absolute;
   width: 4px;
@@ -73,7 +74,7 @@ li.drag a {
   border: 2px solid cornflowerblue;
 }
 
-.treeIndicator::after {
+.tree-indicator::after {
   content: '';
   position: absolute;
   top: 3px;
