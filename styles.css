@@ -47,14 +47,7 @@ li.drag li {
   cursor: move;
   transition: opacity 300ms ease;
   border-top: 1px solid #333333;
-}
-
-ol.tree li a,
-li.drag a {
-  display: block;
-  text-decoration: none;
   color: white;
-  cursor: pointer;
 }
 
 /* the original element getting cloned and placed */
