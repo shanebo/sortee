@@ -114,52 +114,27 @@ class Tree {
 
   onDrag(clone, e) {
     // console.log(clone.setStyle('background-color', 'blue'));
-    // console.log(e.target.setStyle('background-color', 'pink'));
     // droppable.setStyle('background-color', 'green');
-    // console.log('e.target', e.target);
 
-    // e.target = $(e.target);
-
-    // sometimes the drag is dragging a child of li
-    // so we have to get li
+    // e.target is what is being dragged over
+    // sometimes it's droppable and sometimes not
+    // so we have to try to get droppable li
     var droppable = e.target.tagName === 'LI'
       ? e.target
       : e.target.closest('li');
 
-    console.log(droppable);
+    // console.log(droppable);
 
     if (!droppable) {
-      // if there's no droppable dont continue
-      console.log('no droppable so stop');
+      // no droppable so stop
       return;
     }
 
-    if (!droppable || droppable === this.current || this.current.contains(droppable)) {
+    if (this.current === droppable || this.current.contains(droppable)) {
       // prevent dropping on self or descendents
-      console.log('trying to drop on self or descendents');
       this.drop = false;
       return;
     }
-
-    // if (!droppable || !droppable.getParent('ol.tree')) {
-    //   // not sure what this does
-    //   console.log('no droppable or no parent ol.tree');
-    //   return;
-    // }
-
-    // if (droppable === this.current || this.current.contains(droppable)) {
-    //   // I think this prevents dropping on self or children
-    //   this.drop = false;
-    //   console.log('trying to drop on self or descendents');
-    //   return;
-    // }
-
-    // if ([droppable, droppable.getParents('li')].flatten().contains(this.current)) {
-    //   // I think this prevents dropping on self or children
-    //   this.drop = false;
-    //   console.log('trying to drop on self or descendents');
-    //   return;
-    // }
 
     var { left, top, height } = droppable.getBoundingClientRect();
     var droppableCenterY = top + (height / 2);
@@ -211,7 +186,7 @@ class Tree {
     // in which case it'll drop before or after prevDroppable
     droppable = droppable || this.prevDroppable;
 
-    if (this.drop.isSubnode) {
+    if (this.drop && this.drop.isSubnode) {
       const ol = getOrMakeOl(droppable);
       droppable.append(ol);
       ol.append(this.current);
