@@ -3,28 +3,41 @@
   padding: 0
 }
 
+:root {
+  --duration: 400ms;
+  --easing: cubic-bezier(0.19, 1, 0.22, 1);
+  --pop: cornflowerblue;
+}
+
 body {
   font: 13px/1.5 Helvetica, Arial, FreeSans, sans-serif;
   text-rendering: optimizeLegibility;
-  padding: 50px;
   background-color: black;
   height: 100vh;
 }
 
-ul.tree,
-ul.tree ul,
-li.drag ul {
+.tree-holder {
+  padding: 50px;
+  width: 300px;
+  position: fixed;
+  left: 100px;
+  background-color: rgba(255, 0, 242, 0.2);
+}
+
+ol.tree,
+ol.tree ol,
+li.drag ol {
   position: relative;
   list-style-type: none;
 }
 
-ul.tree ul,
-li.drag ul {
+ol.tree ol,
+li.drag ol {
   padding-left: 24px;
-  /* background-color: rgba(200, 200, 0, 0.2); */
+  background-color: rgba(255, 0, 242, 0.2);
 }
 
-ul.tree li,
+ol.tree li,
 li.drag,
 li.drag li {
   position: relative;
@@ -36,7 +49,7 @@ li.drag li {
   border-top: 1px solid #333333;
 }
 
-ul.tree li a,
+ol.tree li a,
 li.drag a {
   display: block;
   text-decoration: none;
@@ -45,22 +58,26 @@ li.drag a {
 }
 
 /* the original element getting cloned and placed */
-.is-dragging {
+ol.tree li.is-cloned-for-dragging {
   opacity: 0.2;
-  transition: opacity 300ms ease;
+  background-color: orange;
+  transition: opacity var(--duration) var(--easing);
 }
 
-.drag {
-  background: #222222;
+ol.tree li.dragin-it {
+  background-color: #222222;
   border-radius: 3px;
   box-shadow: 0 7px 20px rgba(0, 0, 0, 0.33);
   padding: 0 10px;
+  z-index: 30000;
+  pointer-events: none;
 }
 
 .tree-indicator {
   position: absolute;
   height: 8px;
   z-index: 50;
+  transition: all var(--duration) var(--easing);
 }
 
 .tree-indicator::before {
@@ -71,7 +88,7 @@ li.drag a {
   margin-left: -8px;
   z-index: 50;
   border-radius: 20px;
-  border: 2px solid cornflowerblue;
+  border: 2px solid var(--pop);
 }
 
 .tree-indicator::after {
@@ -81,5 +98,5 @@ li.drag a {
   width: 100%;
   height: 2px;
   z-index: 50;
-  background-color: cornflowerblue;
+  background-color: var(--pop);
 }
