@@ -149,11 +149,11 @@ var Tree = new Class({
   },
 
   removeEmptyUls: function() {
-    this.tree.getElements('ul').each(function(ul) {
-      if (!ul.getFirst('li')) {
-        ul.destroy();
-      }
-    });
+    [...document.querySelectorAll('#tree ul')]
+      .filter((ul) => !ul.children.length)
+      .forEach((ul) => {
+        ul.remove();
+      });
   },
 
   sortOrder: function() {
