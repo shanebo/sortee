@@ -1,0 +1,82 @@
+* {
+  margin: 0;
+  padding: 0
+}
+
+body {
+  font: 13px/1.5 Helvetica, Arial, FreeSans, sans-serif;
+  text-rendering: optimizeLegibility;
+  padding: 50px;
+}
+
+ul.tree,
+ul.tree ul,
+li.drag ul {
+  position: relative;
+  list-style-type: none;
+}
+
+ul.tree ul,
+li.drag ul {
+  padding-left: 24px;
+  /* background-color: rgba(200, 200, 0, 0.2); */
+}
+
+ul.tree li,
+li.drag,
+li.drag li {
+  position: relative;
+  display: block;
+  z-index: 10;
+  font: bold 16px/36px Helvetica;
+  cursor: move;
+  transition: opacity 300ms ease;
+  border-top: 1px solid #dddddd;
+}
+
+ul.tree li a,
+li.drag a {
+  display: block;
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+
+.is-dragging {
+  opacity: 0.2;
+  transition: opacity 300ms ease;
+}
+
+.drag {
+  background: #ffffff;
+  border-radius: 3px;
+  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.33);
+  padding: 0 10px;
+}
+
+.treeIndicator {
+  position: absolute;
+  height: 8px;
+  z-index: 50;
+}
+
+.treeIndicator::before {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  margin-left: -8px;
+  z-index: 50;
+  border-radius: 20px;
+  border: 2px solid blue;
+}
+
+.treeIndicator::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  width: 100%;
+  height: 2px;
+  z-index: 50;
+  background-color: blue;
+}
