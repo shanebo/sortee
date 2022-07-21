@@ -115,28 +115,56 @@ class Tree {
   onDrag(clone, e) {
     // console.log(clone.setStyle('background-color', 'blue'));
     // console.log(e.target.setStyle('background-color', 'pink'));
+    // droppable.setStyle('background-color', 'green');
     // console.log('e.target', e.target);
 
-    e.target = $(e.target);
+    // e.target = $(e.target);
 
-    var droppable = e.target.get('tag') === 'li'
+    // sometimes the drag is dragging a child of li
+    // so we have to get li
+    var droppable = e.target.tagName === 'LI'
       ? e.target
-      : e.target.getParent('li');
+      : e.target.closest('li');
 
-    if (!droppable || !droppable.getParent('ol.tree')) return;
+    console.log(droppable);
 
-    if ([droppable, droppable.getParents('li')].flatten().contains(this.current)) {
+    if (!droppable) {
+      // if there's no droppable dont continue
+      console.log('no droppable so stop');
+      return;
+    }
+
+    if (!droppable || droppable === this.current || this.current.contains(droppable)) {
+      // prevent dropping on self or descendents
+      console.log('trying to drop on self or descendents');
       this.drop = false;
       return;
     }
 
-    // droppable.setStyle('background-color', 'green');
-        // console.log();
+    // if (!droppable || !droppable.getParent('ol.tree')) {
+    //   // not sure what this does
+    //   console.log('no droppable or no parent ol.tree');
+    //   return;
+    // }
 
-    var { left, top, height } = droppable.getCoordinates();
-    var elCenter = top + (height / 2);
+    // if (droppable === this.current || this.current.contains(droppable)) {
+    //   // I think this prevents dropping on self or children
+    //   this.drop = false;
+    //   console.log('trying to drop on self or descendents');
+    //   return;
+    // }
 
-    if (e.page.y >= elCenter) {
+    // if ([droppable, droppable.getParents('li')].flatten().contains(this.current)) {
+    //   // I think this prevents dropping on self or children
+    //   this.drop = false;
+    //   console.log('trying to drop on self or descendents');
+    //   return;
+    // }
+
+    var { left, top, height } = droppable.getBoundingClientRect();
+    var droppableCenterY = top + (height / 2);
+
+    if (e.page.y >= droppableCenterY) {
       // var isSubnode = this.startX - e.page.x > 100 && e.page.x > (left + this.padding);
       var isSubnode = e.page.x > (left + 150); // make this be more than a 3rd of droppable item I'm over
       // var isSubnode = e.page.x > (left + this.padding);
@@ -154,7 +182,7 @@ class Tree {
         y: top + height
       });
 
-    } else if (e.page.y < elCenter) {
+    } else if (e.page.y < droppableCenterY) {
       this.drop = {
         where: 'beforebegin',
       };
