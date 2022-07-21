@@ -14,7 +14,8 @@ var Tree = new Class({
     this.createIndicator();
   },
 
-  click: function(e) {
+  click: function (e) {
+    console.log('click');
     e.stop();
   },
 
@@ -171,7 +172,7 @@ var Tree = new Class({
       }
     });
 
-    // console.log(result);
+    console.log(result);
     return result;
   }
 
