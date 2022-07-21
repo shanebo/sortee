@@ -7,6 +7,8 @@ body {
   font: 13px/1.5 Helvetica, Arial, FreeSans, sans-serif;
   text-rendering: optimizeLegibility;
   padding: 50px;
+  background-color: black;
+  height: 100vh;
 }
 
 ul.tree,
@@ -31,14 +33,14 @@ li.drag li {
   font: bold 16px/36px Helvetica;
   cursor: move;
   transition: opacity 300ms ease;
-  border-top: 1px solid #dddddd;
+  border-top: 1px solid #333333;
 }
 
 ul.tree li a,
 li.drag a {
   display: block;
   text-decoration: none;
-  color: black;
+  color: white;
   cursor: pointer;
 }
 
@@ -48,7 +50,7 @@ li.drag a {
 }
 
 .drag {
-  background: #ffffff;
+  background: #222222;
   border-radius: 3px;
   box-shadow: 0 7px 20px rgba(0, 0, 0, 0.33);
   padding: 0 10px;
@@ -68,7 +70,7 @@ li.drag a {
   margin-left: -8px;
   z-index: 50;
   border-radius: 20px;
-  border: 2px solid blue;
+  border: 2px solid cornflowerblue;
 }
 
 .treeIndicator::after {
@@ -78,5 +80,5 @@ li.drag a {
   width: 100%;
   height: 2px;
   z-index: 50;
-  background-color: blue;
+  background-color: cornflowerblue;
 }
