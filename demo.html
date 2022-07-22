@@ -15,7 +15,6 @@
 <body>
 
   <div class="tree-holder">
-
     <ol class="tree" id="tree">
       <li data-id="1"><div>About</div></li>
       <li data-id="2"><div>Work</div></li>
@@ -35,11 +34,10 @@
       <li data-id="9"><div>Contact Us</div></li>
       <li data-id="6"><div>Staff</div></li>
     </ol>
-
   </div>
 
   <script>
-    new Tree('tree');
+    new Tree(document.querySelector('.tree'));
   </script>
 
 </body>
