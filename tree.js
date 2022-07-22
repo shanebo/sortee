@@ -53,8 +53,8 @@ class Tree {
   mousedown(el, e) {
     e.stop();
 
-    this.clone = el.clone()
-      .addClass('dragin-it')
+    el.clone()
+      .addClass('is-clone-dragging')
       .inject(this.tree)
       .makeDraggable({
         droppables: this.tree.getElements('li'),
@@ -76,6 +76,7 @@ class Tree {
 
   onSnap(clone) {
     this.current.addClass('is-disabled-while-dragging');
+    this.clone = clone;
   }
 
   onEnter(clone, droppable) {
@@ -83,7 +84,7 @@ class Tree {
   }
 
   onDrag(clone, e) {
-    clone.setStyles({
+    this.clone.setStyles({
       'transform': `translate(${e.page.x + 20}px, ${e.page.y + 20}px)`,
       'opacity': 1,
       'left': 0,
@@ -153,15 +154,19 @@ class Tree {
       droppable.insertAdjacentElement(this.drop.where, this.current);
     }
 
-    clone.remove();
-    this.removeIndicator();
-    this.current.classList.remove('is-disabled-while-dragging');
+    // this.clone.remove();
+    // this.removeIndicator();
+    // this.current.classList.remove('is-disabled-while-dragging');
     this.current.highlight('#5D4DAF', '#1A1B23');
     this.cleanup();
     this.sortOrder();
   }
 
   cleanup() {
+    this.clone.remove();
+    this.removeIndicator();
+    this.current.classList.remove('is-disabled-while-dragging');
+
     // delete empty ols
     [...document.querySelectorAll('.tree-holder > ol ol')]
       .filter((ol) => !ol.children.length)

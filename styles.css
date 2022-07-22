@@ -56,13 +56,13 @@ ol.tree li.is-disabled-while-dragging {
   transition: opacity var(--duration) var(--easing);
 }
 
-ol.tree li.dragin-it {
+ol.tree li.is-clone-dragging {
   position: fixed;
   z-index: 30000;
   opacity: 0;
   pointer-events: none;
 
-  background-color: violet;
+  background-color: #555555;
   border-radius: 3px;
   box-shadow: 0 7px 20px rgba(0, 0, 0, 0.33);
   padding: 0 10px;
