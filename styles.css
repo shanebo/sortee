@@ -25,32 +25,28 @@ body {
 }
 
 ol.tree,
-ol.tree ol,
-li.drag ol {
+ol.tree ol {
   position: relative;
   list-style-type: none;
 }
 
-ol.tree ol,
-li.drag ol {
+ol.tree ol {
   padding-left: 24px;
   /* background-color: rgba(255, 0, 242, 0.2); */
 }
 
-ol.tree li,
-li.drag,
-li.drag li {
+ol.tree li {
   position: relative;
   display: block;
   z-index: 10;
   font: bold 16px/36px Helvetica;
-  cursor: move;
+  /* cursor: move; */
+  cursor: pointer;
   transition: opacity 300ms ease;
   border-top: 1px solid #333333;
   color: white;
 }
 
-/* the original element getting cloned and placed */
 ol.tree li.is-disabled-while-dragging {
   opacity: 0.2;
   transition: opacity var(--duration) var(--easing);
