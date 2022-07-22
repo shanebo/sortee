@@ -54,6 +54,7 @@ li.drag li {
 ol.tree li.is-disabled-while-dragging {
   opacity: 0.2;
   transition: opacity var(--duration) var(--easing);
+  will-change: opacity;
 }
 
 ol.tree li.is-clone-dragging {
@@ -68,16 +69,19 @@ ol.tree li.is-clone-dragging {
   padding: 0 10px;
 }
 
-.tree-indicator {
+.tree-bar {
   position: fixed;
-  height: 8px;
-  z-index: 50;
-  transition: all var(--duration) var(--easing);
   left: 0;
   top: 0;
+  height: 8px;
+  z-index: 1000;
+  transition:
+    transform var(--duration) var(--easing),
+    width var(--duration) var(--easing);
+  will-change: transform, width;
 }
 
-.tree-indicator::before {
+.tree-bar::before {
   content: '';
   position: absolute;
   width: 4px;
@@ -88,7 +92,7 @@ ol.tree li.is-clone-dragging {
   border: 2px solid var(--pop);
 }
 
-.tree-indicator::after {
+.tree-bar::after {
   content: '';
   position: absolute;
   top: 3px;

@@ -22,21 +22,21 @@ class Tree {
     });
 
     this.padding = 18 + 10;
-    this.indicatorHalfHeight = 4;
+    this.barHalfHeight = 4;
   }
 
-  moveIndicator(pos) {
-    if (!this.indicator) {
-      const indicator = document.createElement('div');
-      indicator.classList.add('tree-indicator');
-      indicator.style.transitionDuration = '0ms';
-      this.indicator = indicator;
-      this.tree.append(indicator);
+  moveBar(pos) {
+    if (!this.bar) {
+      const bar = document.createElement('div');
+      bar.classList.add('tree-bar');
+      bar.style.transitionDuration = '0ms';
+      this.bar = bar;
+      this.tree.append(bar);
     }
 
-    this.indicator.style.width = `${pos.width}px`;
-    this.indicator.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
-    this.indicator.style.transitionDuration = '400ms';
+    this.bar.style.width = `${pos.width}px`;
+    this.bar.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+    this.bar.style.transitionDuration = '400ms';
   }
 
   mousedown(el, e) {
@@ -109,9 +109,9 @@ class Tree {
         isSubnode
       };
 
-      this.moveIndicator({
+      this.moveBar({
         x: left + offset,
-        y: top + height - this.indicatorHalfHeight,
+        y: top + height - this.barHalfHeight,
         width: width - offset
       });
 
@@ -120,9 +120,9 @@ class Tree {
         where: 'beforebegin'
       };
 
-      this.moveIndicator({
+      this.moveBar({
         x: left,
-        y: top - this.indicatorHalfHeight,
+        y: top - this.barHalfHeight,
         width
       });
     }
@@ -147,9 +147,9 @@ class Tree {
   }
 
   cleanup() {
-    if (this.indicator) {
-      this.indicator.remove();
-      this.indicator = false;
+    if (this.bar) {
+      this.bar.remove();
+      this.bar = false;
     }
 
     this.clone.remove();
