@@ -97,3 +97,18 @@ ol.tree li.is-clone-dragging {
   z-index: 50;
   background-color: var(--pop);
 }
+
+
+
+
+
+
+
+.dragging {
+  background-color: violet !important;
+}
+
+
+.dragover {
+  background-color: purple;
+}

@@ -19,21 +19,214 @@ class Tree {
     // method that can enable custom putting things on the created ols. this method will return the ol by which you can attach classes ids, data-ids, etc.
     // an init function that Initialises (enables) the drag and drop functionality by adding all the necessary event listeners and list item attributes. This is required when a list has been rendered with the init option set to false.
     // a destroy or remove or teardown method that Disables the drag and drop functionality by removing all the event listeners and setting the draggable attribute to false on the list items.
+    // rename current to source
 
     this.padding = 18 + 10;
     this.barHalfHeight = 4;
     this.tree = el;
 
-    this.tree.addEventListener('mousedown', (e) => {
-      if (this.tree.contains(e.target)) {
-        const li = e.target.tagName === 'LI' ? e.target : e.target.closest('li');
-        this.mousedown(li, e);
+    // this.tree.addEventListener('mousedown', (e) => {
+    //   if (this.tree.contains(e.target)) {
+    //     const li = e.target.tagName === 'LI' ? e.target : e.target.closest('li');
+    //     this.mousedown(li, e);
+    //   }
+    // }, { passive: true });
+
+
+    let source = null;
+    let dropzone = null;
+    let prevDropzone = null;
+    let x = null;
+    let y = null;
+    let padding = 18 + 10;
+    let barHalfHeight = 4;
+    let drop = null;
+    let bar = null;
+
+
+
+    function moveBar(pos) {
+      if (!bar) {
+        bar = document.createElement('div');
+        bar.classList.add('tree-bar');
+        bar.style.transitionDuration = '0ms';
+        // bar = bar;
+        el.append(bar);
       }
-    }, { passive: true });
+
+      bar.style.width = `${pos.width}px`;
+      bar.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+      bar.style.transitionDuration = '400ms';
+    }
+
+    function cleanup() {
+      if (bar) {
+        bar.remove();
+        bar = null;
+      }
+
+      // this.clone.remove();
+      source.classList.remove('is-disabled-while-dragging');
+
+      // delete empty ols
+      [...el.querySelectorAll('ol')]
+      // [...document.querySelectorAll('.tree-holder > ol ol')]
+        .filter((ol) => !ol.children.length)
+        .forEach((ol) => ol.remove());
+    }
+
+
+
+
+    this.tree.addEventListener('dragstart', (e) => {
+      // e.preventDefault();
+      source = e.target;
+      console.log('dragstart!');
+      e.target.classList.add('dragging');
+    });
+
+
+    // this.tree.addEventListener('dragover', (e) => {
+    //   // prevent default to allow drop
+    //   e.preventDefault();
+    //   // e.target.classList.remove('dragging');
+    // });
+
+    this.tree.addEventListener('drag', (e) => {
+      // console.log(e.target);
+
+      x = e.pageX;
+      y = e.pageY;
+
+      // const { left, top } = dropzone.getBoundingClientRect();
+
+
+      // this.clone.style.transform = `translate(${e.page.x + 20}px, ${e.page.y + 20}px)`;
+      // this.clone.style.left = '0';
+      // this.clone.style.top = '0';
+      // this.clone.style.opacity = '1';
+
+      // e.target is what is being dragged over
+      // sometimes it's dropzone and sometimes not
+      // so we have to try to get dropzone li
+      // const dropzone = e.target.tagName === 'LI'
+      //   ? e.target
+      //   : e.target.closest('li');
+
+      if (!dropzone) {
+        // no dropzone so stop
+        return;
+      }
+
+      if (source === dropzone || source.contains(dropzone)) {
+        // prevent dropping on self or descendents
+        drop = false;
+        return;
+      }
+
+      const { left, top, width, height } = dropzone.getBoundingClientRect();
+      const dropzoneCenterY = top + (height / 2);
+
+      if (y >= dropzoneCenterY) {
+        const nestThreshold = width / 3;
+        const makeChild = x > left + nestThreshold;
+        const offset = makeChild ? padding : 0;
+
+        drop = {
+          where: 'afterend',
+          makeChild
+        };
+
+        moveBar({
+          x: left + offset,
+          y: top + height - barHalfHeight,
+          width: width - offset
+        });
+
+      } else if (y < dropzoneCenterY) {
+        drop = {
+          where: 'beforebegin'
+        };
+
+        moveBar({
+          x: left,
+          y: top - barHalfHeight,
+          width
+        });
+      }
+
+    });
+
+    this.tree.addEventListener('dragenter', (e) => {
+      const li = e.target.tagName === 'LI' ? e.target : e.target.closest('li');
+
+      prevDropzone = dropzone;
+      dropzone = li;
+      // console.log(e.pageX, e.pageY);
+
+    // highlight potential drop target when the draggable element enters it
+      if (li) {
+        // if (e.target.classList.contains('dropzone')) {
+        e.target.classList.add('dragover');
+      }
+    });
+
+    this.tree.addEventListener('dragleave', (e) => {
+      const li = e.target.tagName === 'LI' ? e.target : e.target.closest('li');
+
+      // reset background of potential drop target when the draggable element leaves it
+      if (li) {
+        // if (e.target.classList.contains('dropzone')) {
+        e.target.classList.remove('dragover');
+      }
+    });
+
+    this.tree.addEventListener('dragend', (e) => {
+      console.log('dragend!');
+      console.log(e.target);
+      console.log(dropzone);
+      console.log({ x, y });
+      console.log({ epageX: e.pageX, pageY: e.pageY });
+      // console.log(e.pageX, e.pageY);
+
+      e.target.classList.remove('dragging');
+
+      // handles use case where drop outside of dropzone zone
+      // in which case it'll drop before or after prevDropzone
+      dropzone = dropzone || prevDropzone;
+
+      if (drop && drop.makeChild) {
+        const ol = getOrMakeOl(dropzone);
+        dropzone.append(ol);
+        ol.append(source);
+      } else if (drop) {
+        dropzone.insertAdjacentElement(drop.where, source);
+      }
+
+      // this.current.highlight('#5D4DAF', '#1A1B23'); // make vanilla
+      cleanup();
+
+      // this.serialize();
+
+    });
+
+    // this.tree.addEventListener('drop', (e) => {
+    //   console.log('drop');
+    //   console.log(e.target);
+    //   const li = e.target.tagName === 'LI' ? e.target : e.target.closest('li');
+    //   // prevent default action (open as link for some elements)
+    //   e.preventDefault();
+
+    //   if (li) {
+    //     source.parentNode.removeChild(source);
+    //     e.target.appendChild(source);
+    //   }
+    // });
+
   }
 
   mousedown(li, e) {
-    e.preventDefault();
+    // e.preventDefault();
 
     const clone = li.cloneNode(true);
     clone.classList.add('is-clone-dragging');
