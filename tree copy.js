@@ -46,7 +46,7 @@ var Tree = new Class({
     e.stop();
 
     this.current = el;
-    this.current.classList.add('is-cloned-for-dragging');
+    this.current.classList.add('is-disabled-while-dragging');
 
     this.clone = el.clone()
       .setStyles({
@@ -149,7 +149,7 @@ var Tree = new Class({
 
     var drop = droppable || this.previousDroppable;
 
-    this.current.classList.remove('is-cloned-for-dragging');
+    this.current.classList.remove('is-disabled-while-dragging');
 
     if (!drop) return;
 

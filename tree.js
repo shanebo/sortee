@@ -19,13 +19,19 @@ class Tree {
     this.tree = $(document.querySelector('.tree-holder > ol')).addEvents({
       'mousedown:relay(li)': function(e) {
         self.mousedown(this, e);
+      },
+      'mouseup:relay(li)': function(e) {
+        self.mouseup(this, e);
       }
     });
+
+    this.indicatorHalfHeight = 4;
   }
 
   createIndicator() {
     const indicator = document.createElement('div');
     indicator.classList.add('tree-indicator');
+    indicator.style.transitionDuration = '0ms';
     this.indicator = indicator;
     this.tree.append(indicator);
   }
@@ -35,15 +41,29 @@ class Tree {
       this.createIndicator();
     }
 
-    const coords = this.tree.getCoordinates();
-    const indicatorWidth = coords.width - (pos.x - coords.left);
+    // const coords = this.tree.getCoordinates();
+    // const indicatorWidth = coords.width - (pos.x - coords.left);
 
     this.indicator.setStyles({
-      'width': indicatorWidth,
+      'width': pos.width,
+      // 'width': indicatorWidth,
       'opacity': 1,
-      'left': pos.x - coords.left,
-      'top': pos.y - coords.top - (this.indicator.getSize().y / 2)
+      // 'left': 0,
+      // 'top': 0
+      // 'left': pos.x,
+      // 'top': pos.y - (this.indicator.getSize().y / 2)
+      // 'left': pos.x - coords.left,
+      // 'top': pos.y - coords.top - (this.indicator.getSize().y / 2)
     });
+
+
+    this.indicator.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+    // this.indicator.style.transform = `translate(${pos.x}px, ${pos.y - (this.indicator.getSize().y / 2)}px)`;
+    // this.indicator.style.transform = `translateX(${pos.x}px) translateY(${pos.y - (this.indicator.getSize().y / 2)}px)`;
+
+    this.indicator.style.transitionDuration = '400ms';
+
+    // this.indicator.style.transform = `translateX(${pos.x - coords.left}px) translateY(${pos.y - coords.top - (this.indicator.getSize().y / 2)}px)`;
   }
 
   removeIndicator() {
@@ -56,22 +76,8 @@ class Tree {
   mousedown(el, e) {
     e.stop();
 
-    if (el.tagName !== 'LI') {
-      alert(`el.tagName ${el.tagName}`);
-    }
-
-    console.log(e.page);
-
     this.clone = el.clone()
-      .setStyles({
-        'left': e.pageX,
-        'top': e.pageY,
-        'position': 'absolute',
-        'z-index': 50,
-        // 'opacity': 0,
-      })
       .addClass('dragin-it')
-      // .inject(this.tree, 'top')
       .inject(this.tree)
       .makeDraggable({
         droppables: this.tree.getElements('li'),
@@ -89,21 +95,14 @@ class Tree {
     // this is not the clone that is following the mouse
     // it's the one that is locked in its original location
     this.current = el;
-    this.current.addClass('is-cloned-for-dragging');
+  }
+
+  mouseup(el, e) {
+    this.current.classList.remove('is-disabled-while-dragging');
   }
 
   onSnap(clone) {
-    // clone.setStyles({
-    //   // 'left': e.pageX,
-    //   // 'top': e.pageY,
-    //   'background-color': 'white',
-    //   'opacity': 1,
-    //   'position': 'absolute',
-    //   // 'opacity': 0,
-    //   'z-index': 50
-    // });
-
-    // console.log(clone);
+    this.current.addClass('is-disabled-while-dragging');
   }
 
   onEnter(clone, droppable) {
@@ -113,17 +112,19 @@ class Tree {
   }
 
   onDrag(clone, e) {
-    // console.log(clone.setStyle('background-color', 'blue'));
-    // droppable.setStyle('background-color', 'green');
+    clone.setStyles({
+      'transform': `translate(${e.page.x + 20}px, ${e.page.y + 20}px)`,
+      'opacity': 1,
+      'left': 0,
+      'top': 0,
+    });
 
     // e.target is what is being dragged over
     // sometimes it's droppable and sometimes not
     // so we have to try to get droppable li
-    var droppable = e.target.tagName === 'LI'
+    const droppable = e.target.tagName === 'LI'
       ? e.target
       : e.target.closest('li');
-
-    // console.log(droppable);
 
     if (!droppable) {
       // no droppable so stop
@@ -136,15 +137,13 @@ class Tree {
       return;
     }
 
-    var { left, top, height } = droppable.getBoundingClientRect();
-    var droppableCenterY = top + (height / 2);
+    const { left, top, height, width } = droppable.getBoundingClientRect();
+    const droppableCenterY = top + (height / 2);
 
     if (e.page.y >= droppableCenterY) {
-      // var isSubnode = this.startX - e.page.x > 100 && e.page.x > (left + this.padding);
-      var isSubnode = e.page.x > (left + 150); // make this be more than a 3rd of droppable item I'm over
-      // var isSubnode = e.page.x > (left + this.padding);
-
-      // 'beforebegin', 'afterbegin', 'beforeend', 'afterend'
+      const nestThreshold = width / 3;
+      const isSubnode = e.page.x > left + nestThreshold;
+      const offset = isSubnode ? this.padding : 0;
 
       this.drop = {
         where: 'afterend',
@@ -152,36 +151,25 @@ class Tree {
       };
 
       this.showIndicator({
-        x: left + (isSubnode ? this.padding : 0),
-        // x: left + (isSubnode ? this.padding : 0),
-        y: top + height
+        x: left + offset,
+        y: top + height - this.indicatorHalfHeight,
+        width: width - offset,
       });
 
     } else if (e.page.y < droppableCenterY) {
       this.drop = {
-        where: 'beforebegin',
+        where: 'beforebegin'
       };
 
       this.showIndicator({
         x: left,
-        y: top
+        y: top - this.indicatorHalfHeight,
+        width
       });
     }
   }
 
   onDrop(clone, droppable) {
-    // this.current.setStyle('background-color', 'purple');
-    // droppable.setStyle('background-color', 'green');
-    // this.prevDroppable.setStyle('background-color', 'teal');
-
-    // if (this.current === droppable) {
-    //   alert('this.current === droppable!');
-    // }
-
-    // if (droppable === this.prevDroppable) {
-    //   alert('droppable and prevDroppable are same!');
-    // }
-
     // handles use case where drop outside of droppable zone
     // in which case it'll drop before or after prevDroppable
     droppable = droppable || this.prevDroppable;
@@ -196,20 +184,14 @@ class Tree {
 
     clone.remove();
     this.removeIndicator();
-    this.current.classList.remove('is-cloned-for-dragging');
+    this.current.classList.remove('is-disabled-while-dragging');
     this.current.highlight('#5D4DAF', '#1A1B23');
-    this.removeEmptyOls();
+    this.cleanup();
     this.sortOrder();
   }
 
-
-
-
-
-
-
-
-  removeEmptyOls() {
+  cleanup() {
+    // delete empty ols
     [...document.querySelectorAll('.tree-holder > ol ol')]
       .filter((ol) => !ol.children.length)
       .forEach((ol) => {
@@ -218,7 +200,7 @@ class Tree {
   }
 
   sortOrder() {
-
+    // MAKE THIS AN OPTION FOR YOUR OWN SERIALIZE ON SORT METHOD
     // RIGHT STRUCTURE
     const serial = [...document.querySelectorAll('.tree-holder ol')].reverse();
 
@@ -272,5 +254,4 @@ class Tree {
 
 
   }
-
 }

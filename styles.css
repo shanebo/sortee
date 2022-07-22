@@ -21,7 +21,7 @@ body {
   width: 300px;
   position: fixed;
   left: 100px;
-  background-color: rgba(255, 0, 242, 0.2);
+  background-color: #1A1B23;
 }
 
 ol.tree,
@@ -34,7 +34,7 @@ li.drag ol {
 ol.tree ol,
 li.drag ol {
   padding-left: 24px;
-  background-color: rgba(255, 0, 242, 0.2);
+  /* background-color: rgba(255, 0, 242, 0.2); */
 }
 
 ol.tree li,
@@ -51,26 +51,30 @@ li.drag li {
 }
 
 /* the original element getting cloned and placed */
-ol.tree li.is-cloned-for-dragging {
+ol.tree li.is-disabled-while-dragging {
   opacity: 0.2;
-  background-color: orange;
   transition: opacity var(--duration) var(--easing);
 }
 
 ol.tree li.dragin-it {
-  background-color: #222222;
+  position: fixed;
+  z-index: 30000;
+  opacity: 0;
+  pointer-events: none;
+
+  background-color: violet;
   border-radius: 3px;
   box-shadow: 0 7px 20px rgba(0, 0, 0, 0.33);
   padding: 0 10px;
-  z-index: 30000;
-  pointer-events: none;
 }
 
 .tree-indicator {
-  position: absolute;
+  position: fixed;
   height: 8px;
   z-index: 50;
   transition: all var(--duration) var(--easing);
+  left: 0;
+  top: 0;
 }
 
 .tree-indicator::before {
