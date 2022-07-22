@@ -162,7 +162,7 @@ class Tree {
       dropzone.insertAdjacentElement(this.drop.where, this.current);
     }
 
-    this.current.highlight('#5D4DAF', '#1A1B23');
+    this.current.highlight('#5D4DAF', '#1A1B23'); // make vanilla
     this.cleanup();
     this.serialize();
   }
