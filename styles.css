@@ -40,8 +40,7 @@ ol.tree li {
   display: block;
   z-index: 10;
   font: bold 16px/36px Helvetica;
-  /* cursor: move; */
-  cursor: pointer;
+  cursor: default;
   transition: opacity 300ms ease;
   border-top: 1px solid #333333;
   color: white;
@@ -64,7 +63,6 @@ ol.tree li.is-clone-dragging {
   box-shadow: 0 7px 20px rgba(0, 0, 0, 0.33);
   padding: 0 10px;
 }
-
 
 ol.tree li.is-moved {
   background-color: transparent;
@@ -111,19 +109,4 @@ ol.tree li.is-moved {
   height: 2px;
   z-index: 50;
   background-color: var(--pop);
-}
-
-
-
-
-
-
-
-.dragging {
-  background-color: violet !important;
-}
-
-
-.dragover {
-  background-color: purple;
 }

@@ -10,13 +10,14 @@ function getOrMakeOl(dropzone) {
   }
 }
 
+
 function getLi(target) {
   return target.tagName === 'LI' ? target : target.closest('li');
 }
 
 
 class Tree {
-  constructor(el) {
+  constructor(tree) {
     // options needed
     // serialize function?
     // ol = the root ol list element
@@ -25,71 +26,19 @@ class Tree {
     // a destroy or remove or teardown method that Disables the drag and drop functionality by removing all the event listeners and setting the draggable attribute to false on the list items.
     // rename current to source
 
-
-
-
     let source = null;
     let dropzone = null;
     let prevDropzone = null;
-    let x = null;
-    let y = null;
     let padding = 18 + 10;
     let barHalfHeight = 4;
     let drop = null;
     let bar = null;
-    let dragging = false;
     let clone = null;
-    let tree = el;
-
-
-
-    function moveBar(pos) {
-      if (!bar) {
-        bar = document.createElement('div');
-        bar.classList.add('tree-bar');
-        // bar.style.transitionDuration = '0ms';
-        tree.append(bar);
-      }
-
-      bar.style.width = `${pos.width}px`;
-      bar.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
-      // bar.style.transitionDuration = '400ms';
-    }
-
-    function cleanup() {
-      console.log('cleanup!!');
-      dragging = false;
-
-      if (bar) {
-        bar.remove();
-        bar = null;
-      }
-
-      clone.remove();
-      source.classList.remove('is-disabled-while-dragging');
-
-      // delete empty ols
-      [...tree.querySelectorAll('ol')]
-      // [...document.querySelectorAll('.tree-holder > ol ol')]
-        .filter((ol) => !ol.children.length)
-        .forEach((ol) => ol.remove());
-
-
-      // remove class that highlights moved li
-      setTimeout(function(){
-        [...tree.querySelectorAll('li')].forEach((li) => li.classList.remove('is-moved'));
-      }, 800);
-
-        // remove expensive tree events like mousemove, mouseover
-    }
-
 
 
     tree.addEventListener('mousedown', (e) => {
-      // add event setup on tree so the events aren't firing unless mousedown happens
       e.preventDefault();
       console.log('mousedown');
-      dragging = true;
 
       // this is the list item that is ghosted and being sorted
       // this is not the clone that is following the mouse
@@ -98,61 +47,38 @@ class Tree {
 
       clone = source.cloneNode(true);
       clone.classList.add('is-clone-dragging');
-      tree.append(clone);
 
-      // clone
-      //   .makeDraggable({
-      //     droppables: this.tree.getElements('li'),
-      //     snap: 4
-      //   })
-      //   .addEvents({
-      //     onSnap: this.onSnap.bind(this),
-      //     onEnter: this.onEnter.bind(this),
-      //     onDrag: this.onDrag.bind(this),
-      //     onDrop: this.onDrop.bind(this)
-      //   })
-      //   .start({
-      //     page: {
-      //       x: e.pageX,
-      //       y: e.pageY
-      //     }
-      //   });
+      tree.append(clone);
+      tree.addEventListener('mouseover', mouseover);
+      document.addEventListener('mousemove', mousemove, { passive: true });
+      document.addEventListener('mouseup', mouseup);
     });
 
 
-    tree.addEventListener('mouseover', (e) => {
-      console.log('mouseover');
+    function mouseover(e){
+      // console.log('mouseover');
       prevDropzone = dropzone;
       dropzone = getLi(e.target);
-    });
+    }
 
 
-    tree.addEventListener('mousemove', (e) => {
-      // add threshold before event starts running
-      if (!dragging) return;
-
-
+    function mousemove(e){
+      // console.log('mousemove!');
       // INSTEAD OF MOUSEOVER CONSIDER THIS TO GET dropzone and prevDropzone SINCE I'M ALREADY DOING THIS
-      // document.elementFromPoint(event.clientX, event.clientY);
 
       source.classList.add('is-disabled-while-dragging');
-
-      // console.log(e.target);
-
-      // x = e.pageX;
-      // y = e.pageY;
 
       clone.style.transform = `translate(${e.pageX + 20}px, ${e.pageY + 20}px)`;
       clone.style.left = '0';
       clone.style.top = '0';
       clone.style.opacity = '1';
 
-      // e.target is what is being dragged over
-      // sometimes it's dropzone and sometimes not
-      // so we have to try to get dropzone li
-      // const dropzone = e.target.tagName === 'LI'
-      //   ? e.target
-      //   : e.target.closest('li');
+      const overEl = document.elementFromPoint(e.pageX, e.pageY);
+
+      if (overEl !== tree && !tree.contains(overEl)) {
+        console.log('outside of tree');
+        return;
+      }
 
       if (!dropzone) {
         // no dropzone so stop
@@ -195,22 +121,11 @@ class Tree {
           width
         });
       }
-    }, { passive: true });
+    }
 
 
-
-
-    document.addEventListener('mouseup', (e) => {
-      // tree.addEventListener('mouseup', (e) => {
+    function mouseup(e) {
       console.log('mouseup!');
-      // console.log(e.target);
-      // console.log(dropzone);
-      // console.log({ x, y });
-      // console.log({ epageX: e.pageX, pageY: e.pageY });
-      // console.log(e.pageX, e.pageY);
-
-      // e.target.classList.remove('dragging');
-
       // handles use case where drop outside of dropzone zone
       // in which case it'll drop before or after prevDropzone
       dropzone = dropzone || prevDropzone;
@@ -226,28 +141,53 @@ class Tree {
       source.classList.add('is-moved');
       cleanup();
       // serialize();
-    });
+    }
+
+
+    function moveBar(pos) {
+      if (!bar) {
+        bar = document.createElement('div');
+        bar.classList.add('tree-bar');
+        // bar.style.transitionDuration = '0ms';
+        tree.append(bar);
+      }
+
+      bar.style.width = `${pos.width}px`;
+      bar.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+      // bar.style.transitionDuration = '400ms';
+    }
+
+
+    function cleanup() {
+      console.log('cleanup!!');
+
+      if (bar) {
+        bar.remove();
+        bar = null;
+      }
+
+      clone.remove();
+      source.classList.remove('is-disabled-while-dragging');
+
+      // delete empty ols
+      [...tree.querySelectorAll('ol')]
+      // [...document.querySelectorAll('.tree-holder > ol ol')]
+        .filter((ol) => !ol.children.length)
+        .forEach((ol) => ol.remove());
+
+      // remove class that highlights moved li
+      setTimeout(function(){
+        [...tree.querySelectorAll('li')].forEach((li) => li.classList.remove('is-moved'));
+      }, 800);
+
+      tree.removeEventListener('mouseover', mouseover);
+      document.removeEventListener('mousemove', mousemove);
+      document.removeEventListener('mouseup', mouseup);
+    }
+
   }
 
 
-
-
-
-
-
-  onSnap(clone) {
-    this.current.addClass('is-disabled-while-dragging');
-    this.clone = clone;
-  }
-
-  onDrop(clone, dropzone) {
-  }
-
-  moveBar(pos) {
-  }
-
-  cleanup() {
-  }
 
   serialize() {
     // MAKE THIS AN OPTION FOR YOUR OWN SERIALIZE ON SORT METHOD
