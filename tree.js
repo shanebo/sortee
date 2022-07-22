@@ -13,16 +13,23 @@ function getOrMakeOl(dropzone) {
 
 class Tree {
   constructor(el) {
-    const self = this;
-
-    this.tree = $(document.querySelector('.tree-holder > ol')).addEvents({
-      'mousedown:relay(li)': function(e) {
-        self.mousedown(this, e);
-      }
-    });
+    // options needed
+    // serialize function?
+    // ol = the root ol list element
+    // method that can enable custom putting things on the created ols. this method will return the ol by which you can attach classes ids, data-ids, etc.
+    // an init function that Initialises (enables) the drag and drop functionality by adding all the necessary event listeners and list item attributes. This is required when a list has been rendered with the init option set to false.
+    // a destroy or remove or teardown method that Disables the drag and drop functionality by removing all the event listeners and setting the draggable attribute to false on the list items.
 
     this.padding = 18 + 10;
     this.barHalfHeight = 4;
+    this.tree = el;
+
+    this.tree.addEventListener('mousedown', (e) => {
+      if (this.tree.contains(e.target)) {
+        const li = e.target.tagName === 'LI' ? e.target : e.target.closest('li');
+        this.mousedown(li, e);
+      }
+    }, { passive: true });
   }
 
   moveBar(pos) {
@@ -39,12 +46,15 @@ class Tree {
     this.bar.style.transitionDuration = '400ms';
   }
 
-  mousedown(el, e) {
-    e.stop();
+  mousedown(li, e) {
+    e.preventDefault();
 
-    el.clone()
-      .addClass('is-clone-dragging')
-      .inject(this.tree)
+    const clone = li.cloneNode(true);
+    clone.classList.add('is-clone-dragging');
+
+    this.tree.append(clone);
+
+    clone
       .makeDraggable({
         droppables: this.tree.getElements('li'),
         snap: 4
@@ -55,12 +65,37 @@ class Tree {
         onDrag: this.onDrag.bind(this),
         onDrop: this.onDrop.bind(this)
       })
-      .start(e);
+      .start({
+        page: {
+          x: e.pageX,
+          y: e.pageY
+        }
+      });
+
+    // li.clone()
+    //   .addClass('is-clone-dragging')
+    //   .inject(this.tree)
+    //   .makeDraggable({
+    //     droppables: this.tree.getElements('li'),
+    //     snap: 4
+    //   })
+    //   .addEvents({
+    //     onSnap: this.onSnap.bind(this),
+    //     onEnter: this.onEnter.bind(this),
+    //     onDrag: this.onDrag.bind(this),
+    //     onDrop: this.onDrop.bind(this)
+    //   })
+    //   .start({
+    //     page: {
+    //       x: e.pageX,
+    //       y: e.pageY
+    //     }
+    //   });
 
     // this is the list item that is ghosted and being sorted
     // this is not the clone that is following the mouse
     // it's the one that is locked in its original location
-    this.current = el;
+    this.current = li;
   }
 
   onSnap(clone) {
@@ -156,7 +191,8 @@ class Tree {
     this.current.classList.remove('is-disabled-while-dragging');
 
     // delete empty ols
-    [...document.querySelectorAll('.tree-holder > ol ol')]
+    [...this.tree.querySelectorAll('ol')]
+    // [...document.querySelectorAll('.tree-holder > ol ol')]
       .filter((ol) => !ol.children.length)
       .forEach((ol) => ol.remove());
   }
