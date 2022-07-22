@@ -15,13 +15,13 @@ class Tree {
   constructor(el) {
     const self = this;
 
-    this.padding = 18 + 10;
     this.tree = $(document.querySelector('.tree-holder > ol')).addEvents({
       'mousedown:relay(li)': function(e) {
         self.mousedown(this, e);
       }
     });
 
+    this.padding = 18 + 10;
     this.indicatorHalfHeight = 4;
   }
 
