@@ -32,20 +32,6 @@ class Tree {
     }, { passive: true });
   }
 
-  moveBar(pos) {
-    if (!this.bar) {
-      const bar = document.createElement('div');
-      bar.classList.add('tree-bar');
-      bar.style.transitionDuration = '0ms';
-      this.bar = bar;
-      this.tree.append(bar);
-    }
-
-    this.bar.style.width = `${pos.width}px`;
-    this.bar.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
-    this.bar.style.transitionDuration = '400ms';
-  }
-
   mousedown(li, e) {
     e.preventDefault();
 
@@ -179,6 +165,20 @@ class Tree {
     this.current.highlight('#5D4DAF', '#1A1B23');
     this.cleanup();
     this.serialize();
+  }
+
+  moveBar(pos) {
+    if (!this.bar) {
+      const bar = document.createElement('div');
+      bar.classList.add('tree-bar');
+      bar.style.transitionDuration = '0ms';
+      this.bar = bar;
+      this.tree.append(bar);
+    }
+
+    this.bar.style.width = `${pos.width}px`;
+    this.bar.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+    this.bar.style.transitionDuration = '400ms';
   }
 
   cleanup() {
