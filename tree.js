@@ -25,29 +25,18 @@ class Tree {
     this.indicatorHalfHeight = 4;
   }
 
-  createIndicator() {
-    const indicator = document.createElement('div');
-    indicator.classList.add('tree-indicator');
-    indicator.style.transitionDuration = '0ms';
-    this.indicator = indicator;
-    this.tree.append(indicator);
-  }
-
-  showIndicator(pos) {
+  moveIndicator(pos) {
     if (!this.indicator) {
-      this.createIndicator();
+      const indicator = document.createElement('div');
+      indicator.classList.add('tree-indicator');
+      indicator.style.transitionDuration = '0ms';
+      this.indicator = indicator;
+      this.tree.append(indicator);
     }
 
     this.indicator.style.width = `${pos.width}px`;
     this.indicator.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
     this.indicator.style.transitionDuration = '400ms';
-  }
-
-  removeIndicator() {
-    if (this.indicator) {
-      this.indicator.remove();
-      this.indicator = false;
-    }
   }
 
   mousedown(el, e) {
@@ -120,7 +109,7 @@ class Tree {
         isSubnode
       };
 
-      this.showIndicator({
+      this.moveIndicator({
         x: left + offset,
         y: top + height - this.indicatorHalfHeight,
         width: width - offset,
@@ -131,7 +120,7 @@ class Tree {
         where: 'beforebegin'
       };
 
-      this.showIndicator({
+      this.moveIndicator({
         x: left,
         y: top - this.indicatorHalfHeight,
         width
@@ -154,23 +143,25 @@ class Tree {
 
     this.current.highlight('#5D4DAF', '#1A1B23');
     this.cleanup();
-    this.sortOrder();
+    this.serialize();
   }
 
   cleanup() {
+    if (this.indicator) {
+      this.indicator.remove();
+      this.indicator = false;
+    }
+
     this.clone.remove();
-    this.removeIndicator();
     this.current.classList.remove('is-disabled-while-dragging');
 
     // delete empty ols
     [...document.querySelectorAll('.tree-holder > ol ol')]
       .filter((ol) => !ol.children.length)
-      .forEach((ol) => {
-        ol.remove();
-      });
+      .forEach((ol) => ol.remove());
   }
 
-  sortOrder() {
+  serialize() {
     // MAKE THIS AN OPTION FOR YOUR OWN SERIALIZE ON SORT METHOD
     // RIGHT STRUCTURE
     const serial = [...document.querySelectorAll('.tree-holder ol')].reverse();
