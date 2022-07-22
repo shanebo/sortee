@@ -112,7 +112,7 @@ class Tree {
       this.moveIndicator({
         x: left + offset,
         y: top + height - this.indicatorHalfHeight,
-        width: width - offset,
+        width: width - offset
       });
 
     } else if (e.page.y < droppableCenterY) {
@@ -213,7 +213,5 @@ class Tree {
     // .then(res => res.json())
     // .then(response => console.log(response))
     // .catch(error => console.error(error));
-
-
   }
 }
