@@ -122,12 +122,12 @@ class Tree {
 
     if (e.page.y >= dropzoneCenterY) {
       const nestThreshold = width / 3;
-      const isSubnode = e.page.x > left + nestThreshold;
-      const offset = isSubnode ? this.padding : 0;
+      const makeChild = e.page.x > left + nestThreshold;
+      const offset = makeChild ? this.padding : 0;
 
       this.drop = {
         where: 'afterend',
-        isSubnode
+        makeChild
       };
 
       this.moveBar({
@@ -154,7 +154,7 @@ class Tree {
     // in which case it'll drop before or after prevDropzone
     dropzone = dropzone || this.prevDropzone;
 
-    if (this.drop && this.drop.isSubnode) {
+    if (this.drop && this.drop.makeChild) {
       const ol = getOrMakeOl(dropzone);
       dropzone.append(ol);
       ol.append(this.current);
