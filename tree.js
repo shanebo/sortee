@@ -77,6 +77,7 @@ class Tree {
   onSnap(clone) {
     this.current.addClass('is-disabled-while-dragging');
     this.clone = clone;
+    this.clone.style.opacity = '1';
   }
 
   onEnter(clone, droppable) {
@@ -84,12 +85,9 @@ class Tree {
   }
 
   onDrag(clone, e) {
-    this.clone.setStyles({
-      'transform': `translate(${e.page.x + 20}px, ${e.page.y + 20}px)`,
-      'opacity': 1,
-      'left': 0,
-      'top': 0
-    });
+    this.clone.style.transform = `translate(${e.page.x + 20}px, ${e.page.y + 20}px)`;
+    this.clone.style.left = '0';
+    this.clone.style.top = '0';
 
     // e.target is what is being dragged over
     // sometimes it's droppable and sometimes not
@@ -109,7 +107,7 @@ class Tree {
       return;
     }
 
-    const { left, top, height, width } = droppable.getBoundingClientRect();
+    const { left, top, width, height } = droppable.getBoundingClientRect();
     const droppableCenterY = top + (height / 2);
 
     if (e.page.y >= droppableCenterY) {
