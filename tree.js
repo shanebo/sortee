@@ -13,15 +13,12 @@ function getOrMakeOl(droppable) {
 
 class Tree {
   constructor(el) {
-    var self = this;
+    const self = this;
 
     this.padding = 18 + 10;
     this.tree = $(document.querySelector('.tree-holder > ol')).addEvents({
       'mousedown:relay(li)': function(e) {
         self.mousedown(this, e);
-      },
-      'mouseup:relay(li)': function(e) {
-        self.mouseup(this, e);
       }
     });
 
@@ -41,29 +38,9 @@ class Tree {
       this.createIndicator();
     }
 
-    // const coords = this.tree.getCoordinates();
-    // const indicatorWidth = coords.width - (pos.x - coords.left);
-
-    this.indicator.setStyles({
-      'width': pos.width,
-      // 'width': indicatorWidth,
-      'opacity': 1,
-      // 'left': 0,
-      // 'top': 0
-      // 'left': pos.x,
-      // 'top': pos.y - (this.indicator.getSize().y / 2)
-      // 'left': pos.x - coords.left,
-      // 'top': pos.y - coords.top - (this.indicator.getSize().y / 2)
-    });
-
-
+    this.indicator.style.width = `${pos.width}px`;
     this.indicator.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
-    // this.indicator.style.transform = `translate(${pos.x}px, ${pos.y - (this.indicator.getSize().y / 2)}px)`;
-    // this.indicator.style.transform = `translateX(${pos.x}px) translateY(${pos.y - (this.indicator.getSize().y / 2)}px)`;
-
     this.indicator.style.transitionDuration = '400ms';
-
-    // this.indicator.style.transform = `translateX(${pos.x - coords.left}px) translateY(${pos.y - coords.top - (this.indicator.getSize().y / 2)}px)`;
   }
 
   removeIndicator() {
@@ -91,14 +68,10 @@ class Tree {
       })
       .start(e);
 
-    // this is the list item that is ghosted and being placed
+    // this is the list item that is ghosted and being sorted
     // this is not the clone that is following the mouse
     // it's the one that is locked in its original location
     this.current = el;
-  }
-
-  mouseup(el, e) {
-    this.current.classList.remove('is-disabled-while-dragging');
   }
 
   onSnap(clone) {
@@ -106,8 +79,6 @@ class Tree {
   }
 
   onEnter(clone, droppable) {
-    // console.log(clone.setStyle('background-color', 'blue'));
-    // console.log(droppable.setStyle('background-color', 'pink'));
     this.prevDroppable = droppable;
   }
 
@@ -116,7 +87,7 @@ class Tree {
       'transform': `translate(${e.page.x + 20}px, ${e.page.y + 20}px)`,
       'opacity': 1,
       'left': 0,
-      'top': 0,
+      'top': 0
     });
 
     // e.target is what is being dragged over
