@@ -5,9 +5,13 @@ function getOrMakeOl(dropzone) {
     return ol;
   } else {
     const newOl = document.createElement('ol');
-    newOl.classList.add('tree', 'Tree');
+    newOl.classList.add('tree', 'Tree'); // update this to not put a class on it?
     return newOl;
   }
+}
+
+function getLi(target) {
+  return target.tagName === 'LI' ? target : target.closest('li');
 }
 
 
@@ -21,16 +25,7 @@ class Tree {
     // a destroy or remove or teardown method that Disables the drag and drop functionality by removing all the event listeners and setting the draggable attribute to false on the list items.
     // rename current to source
 
-    this.padding = 18 + 10;
-    this.barHalfHeight = 4;
-    this.tree = el;
 
-    // this.tree.addEventListener('mousedown', (e) => {
-    //   if (this.tree.contains(e.target)) {
-    //     const li = e.target.tagName === 'LI' ? e.target : e.target.closest('li');
-    //     this.mousedown(li, e);
-    //   }
-    // }, { passive: true });
 
 
     let source = null;
@@ -52,20 +47,20 @@ class Tree {
       if (!bar) {
         bar = document.createElement('div');
         bar.classList.add('tree-bar');
-        bar.style.transitionDuration = '0ms';
-        // bar = bar;
+        // bar.style.transitionDuration = '0ms';
         tree.append(bar);
       }
 
       bar.style.width = `${pos.width}px`;
       bar.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
-      bar.style.transitionDuration = '400ms';
+      // bar.style.transitionDuration = '400ms';
     }
 
     function cleanup() {
       console.log('cleanup!!');
+      dragging = false;
+
       if (bar) {
-        // alert('bar so delete it!');
         bar.remove();
         bar = null;
       }
@@ -79,28 +74,28 @@ class Tree {
         .filter((ol) => !ol.children.length)
         .forEach((ol) => ol.remove());
 
-      // remove expensive tree events like mousemove, mouseover
+
+      // remove class that highlights moved li
+      setTimeout(function(){
+        [...tree.querySelectorAll('li')].forEach((li) => li.classList.remove('is-moved'));
+      }, 800);
+
+        // remove expensive tree events like mousemove, mouseover
     }
 
-    function getLi(target) {
-      return target.tagName === 'LI' ? target : target.closest('li');
-    }
 
-
-    // this.tree.addEventListener('mousedown', (e) => {
-    //   if (this.tree.contains(e.target)) {
-    //     const li = e.target.tagName === 'LI' ? e.target : e.target.closest('li');
-    //     this.mousedown(li, e);
-    //   }
-    // }, { passive: true });
 
     tree.addEventListener('mousedown', (e) => {
-      console.log('mousedown');
       // add event setup on tree so the events aren't firing unless mousedown happens
-      dragging = true;
       e.preventDefault();
+      console.log('mousedown');
+      dragging = true;
 
+      // this is the list item that is ghosted and being sorted
+      // this is not the clone that is following the mouse
+      // it's the one that is locked in its original location
       source = getLi(e.target);
+
       clone = source.cloneNode(true);
       clone.classList.add('is-clone-dragging');
       tree.append(clone);
@@ -125,18 +120,29 @@ class Tree {
     });
 
 
+    tree.addEventListener('mouseover', (e) => {
+      console.log('mouseover');
+      prevDropzone = dropzone;
+      dropzone = getLi(e.target);
+    });
+
+
     tree.addEventListener('mousemove', (e) => {
       // add threshold before event starts running
       if (!dragging) return;
+
+
+      // INSTEAD OF MOUSEOVER CONSIDER THIS TO GET dropzone and prevDropzone SINCE I'M ALREADY DOING THIS
+      // document.elementFromPoint(event.clientX, event.clientY);
 
       source.classList.add('is-disabled-while-dragging');
 
       // console.log(e.target);
 
-      x = e.pageX;
-      y = e.pageY;
+      // x = e.pageX;
+      // y = e.pageY;
 
-      clone.style.transform = `translate(${x + 20}px, ${y + 20}px)`;
+      clone.style.transform = `translate(${e.pageX + 20}px, ${e.pageY + 20}px)`;
       clone.style.left = '0';
       clone.style.top = '0';
       clone.style.opacity = '1';
@@ -162,9 +168,9 @@ class Tree {
       const { left, top, width, height } = dropzone.getBoundingClientRect();
       const dropzoneCenterY = top + (height / 2);
 
-      if (y >= dropzoneCenterY) {
+      if (e.pageY >= dropzoneCenterY) {
         const nestThreshold = width / 3;
-        const makeChild = x > left + nestThreshold;
+        const makeChild = e.pageX > left + nestThreshold;
         const offset = makeChild ? padding : 0;
 
         drop = {
@@ -178,7 +184,7 @@ class Tree {
           width: width - offset
         });
 
-      } else if (y < dropzoneCenterY) {
+      } else if (e.pageY < dropzoneCenterY) {
         drop = {
           where: 'beforebegin'
         };
@@ -189,25 +195,18 @@ class Tree {
           width
         });
       }
-    });
+    }, { passive: true });
 
 
-    tree.addEventListener('mouseover', (e) => {
-      console.log('mouseover');
-      prevDropzone = dropzone;
-      dropzone = getLi(e.target);
-      // dropzone = e.target.tagName === 'LI' ? e.target : e.target.closest('li');
-    });
 
 
-    tree.addEventListener('mouseup', (e) => {
-      dragging = false;
-
-      console.log('dragend!');
-      console.log(e.target);
-      console.log(dropzone);
-      console.log({ x, y });
-      console.log({ epageX: e.pageX, pageY: e.pageY });
+    document.addEventListener('mouseup', (e) => {
+      // tree.addEventListener('mouseup', (e) => {
+      console.log('mouseup!');
+      // console.log(e.target);
+      // console.log(dropzone);
+      // console.log({ x, y });
+      // console.log({ epageX: e.pageX, pageY: e.pageY });
       // console.log(e.pageX, e.pageY);
 
       // e.target.classList.remove('dragging');
@@ -236,169 +235,18 @@ class Tree {
 
 
 
-  mousedown(li, e) {
-    // e.preventDefault();
-
-    const clone = li.cloneNode(true);
-    clone.classList.add('is-clone-dragging');
-
-    this.tree.append(clone);
-
-    clone
-      .makeDraggable({
-        droppables: this.tree.getElements('li'),
-        snap: 4
-      })
-      .addEvents({
-        onSnap: this.onSnap.bind(this),
-        onEnter: this.onEnter.bind(this),
-        onDrag: this.onDrag.bind(this),
-        onDrop: this.onDrop.bind(this)
-      })
-      .start({
-        page: {
-          x: e.pageX,
-          y: e.pageY
-        }
-      });
-
-    // li.clone()
-    //   .addClass('is-clone-dragging')
-    //   .inject(this.tree)
-    //   .makeDraggable({
-    //     droppables: this.tree.getElements('li'),
-    //     snap: 4
-    //   })
-    //   .addEvents({
-    //     onSnap: this.onSnap.bind(this),
-    //     onEnter: this.onEnter.bind(this),
-    //     onDrag: this.onDrag.bind(this),
-    //     onDrop: this.onDrop.bind(this)
-    //   })
-    //   .start({
-    //     page: {
-    //       x: e.pageX,
-    //       y: e.pageY
-    //     }
-    //   });
-
-    // this is the list item that is ghosted and being sorted
-    // this is not the clone that is following the mouse
-    // it's the one that is locked in its original location
-    this.current = li;
-  }
-
   onSnap(clone) {
     this.current.addClass('is-disabled-while-dragging');
     this.clone = clone;
   }
 
-  onEnter(clone, dropzone) {
-    this.prevDropzone = dropzone;
-  }
-
-  onDrag(clone, e) {
-    this.clone.style.transform = `translate(${e.page.x + 20}px, ${e.page.y + 20}px)`;
-    this.clone.style.left = '0';
-    this.clone.style.top = '0';
-    this.clone.style.opacity = '1';
-
-    // e.target is what is being dragged over
-    // sometimes it's dropzone and sometimes not
-    // so we have to try to get dropzone li
-    const dropzone = e.target.tagName === 'LI'
-      ? e.target
-      : e.target.closest('li');
-
-    if (!dropzone) {
-      // no dropzone so stop
-      return;
-    }
-
-    if (this.current === dropzone || this.current.contains(dropzone)) {
-      // prevent dropping on self or descendents
-      this.drop = false;
-      return;
-    }
-
-    const { left, top, width, height } = dropzone.getBoundingClientRect();
-    const dropzoneCenterY = top + (height / 2);
-
-    if (e.page.y >= dropzoneCenterY) {
-      const nestThreshold = width / 3;
-      const makeChild = e.page.x > left + nestThreshold;
-      const offset = makeChild ? this.padding : 0;
-
-      this.drop = {
-        where: 'afterend',
-        makeChild
-      };
-
-      this.moveBar({
-        x: left + offset,
-        y: top + height - this.barHalfHeight,
-        width: width - offset
-      });
-
-    } else if (e.page.y < dropzoneCenterY) {
-      this.drop = {
-        where: 'beforebegin'
-      };
-
-      this.moveBar({
-        x: left,
-        y: top - this.barHalfHeight,
-        width
-      });
-    }
-  }
-
   onDrop(clone, dropzone) {
-    // handles use case where drop outside of dropzone zone
-    // in which case it'll drop before or after prevDropzone
-    dropzone = dropzone || this.prevDropzone;
-
-    if (this.drop && this.drop.makeChild) {
-      const ol = getOrMakeOl(dropzone);
-      dropzone.append(ol);
-      ol.append(this.current);
-    } else if (this.drop) {
-      dropzone.insertAdjacentElement(this.drop.where, this.current);
-    }
-
-    this.current.highlight('#5D4DAF', '#1A1B23'); // make vanilla
-    this.cleanup();
-    this.serialize();
   }
 
   moveBar(pos) {
-    if (!this.bar) {
-      const bar = document.createElement('div');
-      bar.classList.add('tree-bar');
-      bar.style.transitionDuration = '0ms';
-      this.bar = bar;
-      this.tree.append(bar);
-    }
-
-    this.bar.style.width = `${pos.width}px`;
-    this.bar.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
-    this.bar.style.transitionDuration = '400ms';
   }
 
   cleanup() {
-    if (this.bar) {
-      this.bar.remove();
-      this.bar = false;
-    }
-
-    this.clone.remove();
-    this.current.classList.remove('is-disabled-while-dragging');
-
-    // delete empty ols
-    [...this.tree.querySelectorAll('ol')]
-    // [...document.querySelectorAll('.tree-holder > ol ol')]
-      .filter((ol) => !ol.children.length)
-      .forEach((ol) => ol.remove());
   }
 
   serialize() {
