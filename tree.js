@@ -42,6 +42,9 @@ class Tree {
     let barHalfHeight = 4;
     let drop = null;
     let bar = null;
+    let dragging = false;
+    let clone = null;
+    let tree = el;
 
 
 
@@ -51,7 +54,7 @@ class Tree {
         bar.classList.add('tree-bar');
         bar.style.transitionDuration = '0ms';
         // bar = bar;
-        el.append(bar);
+        tree.append(bar);
       }
 
       bar.style.width = `${pos.width}px`;
@@ -60,51 +63,83 @@ class Tree {
     }
 
     function cleanup() {
+      console.log('cleanup!!');
       if (bar) {
+        // alert('bar so delete it!');
         bar.remove();
         bar = null;
       }
 
-      // this.clone.remove();
+      clone.remove();
       source.classList.remove('is-disabled-while-dragging');
 
       // delete empty ols
-      [...el.querySelectorAll('ol')]
+      [...tree.querySelectorAll('ol')]
       // [...document.querySelectorAll('.tree-holder > ol ol')]
         .filter((ol) => !ol.children.length)
         .forEach((ol) => ol.remove());
+
+      // remove expensive tree events like mousemove, mouseover
+    }
+
+    function getLi(target) {
+      return target.tagName === 'LI' ? target : target.closest('li');
     }
 
 
+    // this.tree.addEventListener('mousedown', (e) => {
+    //   if (this.tree.contains(e.target)) {
+    //     const li = e.target.tagName === 'LI' ? e.target : e.target.closest('li');
+    //     this.mousedown(li, e);
+    //   }
+    // }, { passive: true });
 
+    tree.addEventListener('mousedown', (e) => {
+      console.log('mousedown');
+      // add event setup on tree so the events aren't firing unless mousedown happens
+      dragging = true;
+      e.preventDefault();
 
-    this.tree.addEventListener('dragstart', (e) => {
-      // e.preventDefault();
-      source = e.target;
-      console.log('dragstart!');
-      e.target.classList.add('dragging');
+      source = getLi(e.target);
+      clone = source.cloneNode(true);
+      clone.classList.add('is-clone-dragging');
+      tree.append(clone);
+
+      // clone
+      //   .makeDraggable({
+      //     droppables: this.tree.getElements('li'),
+      //     snap: 4
+      //   })
+      //   .addEvents({
+      //     onSnap: this.onSnap.bind(this),
+      //     onEnter: this.onEnter.bind(this),
+      //     onDrag: this.onDrag.bind(this),
+      //     onDrop: this.onDrop.bind(this)
+      //   })
+      //   .start({
+      //     page: {
+      //       x: e.pageX,
+      //       y: e.pageY
+      //     }
+      //   });
     });
 
 
-    // this.tree.addEventListener('dragover', (e) => {
-    //   // prevent default to allow drop
-    //   e.preventDefault();
-    //   // e.target.classList.remove('dragging');
-    // });
+    tree.addEventListener('mousemove', (e) => {
+      // add threshold before event starts running
+      if (!dragging) return;
 
-    this.tree.addEventListener('drag', (e) => {
+      source.classList.add('is-disabled-while-dragging');
+
       // console.log(e.target);
 
       x = e.pageX;
       y = e.pageY;
 
-      // const { left, top } = dropzone.getBoundingClientRect();
-
-
-      // this.clone.style.transform = `translate(${e.page.x + 20}px, ${e.page.y + 20}px)`;
-      // this.clone.style.left = '0';
-      // this.clone.style.top = '0';
-      // this.clone.style.opacity = '1';
+      clone.style.transform = `translate(${x + 20}px, ${y + 20}px)`;
+      clone.style.left = '0';
+      clone.style.top = '0';
+      clone.style.opacity = '1';
 
       // e.target is what is being dragged over
       // sometimes it's dropzone and sometimes not
@@ -154,34 +189,20 @@ class Tree {
           width
         });
       }
-
     });
 
-    this.tree.addEventListener('dragenter', (e) => {
-      const li = e.target.tagName === 'LI' ? e.target : e.target.closest('li');
 
+    tree.addEventListener('mouseover', (e) => {
+      console.log('mouseover');
       prevDropzone = dropzone;
-      dropzone = li;
-      // console.log(e.pageX, e.pageY);
-
-    // highlight potential drop target when the draggable element enters it
-      if (li) {
-        // if (e.target.classList.contains('dropzone')) {
-        e.target.classList.add('dragover');
-      }
+      dropzone = getLi(e.target);
+      // dropzone = e.target.tagName === 'LI' ? e.target : e.target.closest('li');
     });
 
-    this.tree.addEventListener('dragleave', (e) => {
-      const li = e.target.tagName === 'LI' ? e.target : e.target.closest('li');
 
-      // reset background of potential drop target when the draggable element leaves it
-      if (li) {
-        // if (e.target.classList.contains('dropzone')) {
-        e.target.classList.remove('dragover');
-      }
-    });
+    tree.addEventListener('mouseup', (e) => {
+      dragging = false;
 
-    this.tree.addEventListener('dragend', (e) => {
       console.log('dragend!');
       console.log(e.target);
       console.log(dropzone);
@@ -189,7 +210,7 @@ class Tree {
       console.log({ epageX: e.pageX, pageY: e.pageY });
       // console.log(e.pageX, e.pageY);
 
-      e.target.classList.remove('dragging');
+      // e.target.classList.remove('dragging');
 
       // handles use case where drop outside of dropzone zone
       // in which case it'll drop before or after prevDropzone
@@ -203,27 +224,17 @@ class Tree {
         dropzone.insertAdjacentElement(drop.where, source);
       }
 
-      // this.current.highlight('#5D4DAF', '#1A1B23'); // make vanilla
+      source.classList.add('is-moved');
       cleanup();
-
-      // this.serialize();
-
+      // serialize();
     });
-
-    // this.tree.addEventListener('drop', (e) => {
-    //   console.log('drop');
-    //   console.log(e.target);
-    //   const li = e.target.tagName === 'LI' ? e.target : e.target.closest('li');
-    //   // prevent default action (open as link for some elements)
-    //   e.preventDefault();
-
-    //   if (li) {
-    //     source.parentNode.removeChild(source);
-    //     e.target.appendChild(source);
-    //   }
-    // });
-
   }
+
+
+
+
+
+
 
   mousedown(li, e) {
     // e.preventDefault();

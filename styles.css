@@ -65,6 +65,21 @@ ol.tree li.is-clone-dragging {
   padding: 0 10px;
 }
 
+
+ol.tree li.is-moved {
+  background-color: transparent;
+  animation: flash 800ms ease-in-out backwards;
+}
+
+@keyframes flash {
+  50% {
+    /* background-color: var(--pop); */
+    background-color: #5D4DAF;
+  }
+}
+
+
+
 .tree-bar {
   position: fixed;
   left: 0;
