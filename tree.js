@@ -154,9 +154,6 @@ class Tree {
       droppable.insertAdjacentElement(this.drop.where, this.current);
     }
 
-    // this.clone.remove();
-    // this.removeIndicator();
-    // this.current.classList.remove('is-disabled-while-dragging');
     this.current.highlight('#5D4DAF', '#1A1B23');
     this.cleanup();
     this.sortOrder();
