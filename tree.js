@@ -1,5 +1,5 @@
-function getOrMakeOl(droppable) {
-  const ol = droppable.querySelector('ol');
+function getOrMakeOl(dropzone) {
+  const ol = dropzone.querySelector('ol');
 
   if (ol) {
     return ol;
@@ -68,8 +68,8 @@ class Tree {
     this.clone = clone;
   }
 
-  onEnter(clone, droppable) {
-    this.prevDroppable = droppable;
+  onEnter(clone, dropzone) {
+    this.prevDropzone = dropzone;
   }
 
   onDrag(clone, e) {
@@ -79,27 +79,27 @@ class Tree {
     this.clone.style.opacity = '1';
 
     // e.target is what is being dragged over
-    // sometimes it's droppable and sometimes not
-    // so we have to try to get droppable li
-    const droppable = e.target.tagName === 'LI'
+    // sometimes it's dropzone and sometimes not
+    // so we have to try to get dropzone li
+    const dropzone = e.target.tagName === 'LI'
       ? e.target
       : e.target.closest('li');
 
-    if (!droppable) {
-      // no droppable so stop
+    if (!dropzone) {
+      // no dropzone so stop
       return;
     }
 
-    if (this.current === droppable || this.current.contains(droppable)) {
+    if (this.current === dropzone || this.current.contains(dropzone)) {
       // prevent dropping on self or descendents
       this.drop = false;
       return;
     }
 
-    const { left, top, width, height } = droppable.getBoundingClientRect();
-    const droppableCenterY = top + (height / 2);
+    const { left, top, width, height } = dropzone.getBoundingClientRect();
+    const dropzoneCenterY = top + (height / 2);
 
-    if (e.page.y >= droppableCenterY) {
+    if (e.page.y >= dropzoneCenterY) {
       const nestThreshold = width / 3;
       const isSubnode = e.page.x > left + nestThreshold;
       const offset = isSubnode ? this.padding : 0;
@@ -115,7 +115,7 @@ class Tree {
         width: width - offset
       });
 
-    } else if (e.page.y < droppableCenterY) {
+    } else if (e.page.y < dropzoneCenterY) {
       this.drop = {
         where: 'beforebegin'
       };
@@ -128,17 +128,17 @@ class Tree {
     }
   }
 
-  onDrop(clone, droppable) {
-    // handles use case where drop outside of droppable zone
-    // in which case it'll drop before or after prevDroppable
-    droppable = droppable || this.prevDroppable;
+  onDrop(clone, dropzone) {
+    // handles use case where drop outside of dropzone zone
+    // in which case it'll drop before or after prevDropzone
+    dropzone = dropzone || this.prevDropzone;
 
     if (this.drop && this.drop.isSubnode) {
-      const ol = getOrMakeOl(droppable);
-      droppable.append(ol);
+      const ol = getOrMakeOl(dropzone);
+      dropzone.append(ol);
       ol.append(this.current);
     } else if (this.drop) {
-      droppable.insertAdjacentElement(this.drop.where, this.current);
+      dropzone.insertAdjacentElement(this.drop.where, this.current);
     }
 
     this.current.highlight('#5D4DAF', '#1A1B23');
