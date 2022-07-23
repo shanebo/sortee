@@ -24,34 +24,59 @@ class Tree {
     // method that can enable custom putting things on the created ols. this method will return the ol by which you can attach classes ids, data-ids, etc.
     // an init function that Initialises (enables) the drag and drop functionality by adding all the necessary event listeners and list item attributes. This is required when a list has been rendered with the init option set to false.
     // a destroy or remove or teardown method that Disables the drag and drop functionality by removing all the event listeners and setting the draggable attribute to false on the list items.
-    // rename current to source
 
     let source = null;
-    let dropzone = null;
-    let prevDropzone = null;
-    let padding = 18 + 10;
-    let barHalfHeight = 4;
-    let drop = null;
     let bar = null;
     let clone = null;
+    let dropzone = null;
+    let prevDropzone = null;
+    let drop = null;
+    let padding = 18 + 10;
+    let barHalfHeight = 4;
+    let delta = 6;
+    let startX = 0;
+    let startY = 0;
+    let diffX = 0;
+    let diffY = 0;
+    let dragging = false;
+
 
 
     tree.addEventListener('mousedown', (e) => {
       e.preventDefault();
       console.log('mousedown');
 
+      dragging = false;
+      startX = e.pageX;
+      startY = e.pageY;
+
       // this is the list item that is ghosted and being sorted
       // this is not the clone that is following the mouse
       // it's the one that is locked in its original location
       source = getLi(e.target);
+
+      // moveBar({
+      //   x: e.pageX,
+      //   y: e.pageY
+      // });
+
+      bar = document.createElement('div');
+      bar.classList.add('tree-bar');
+      // bar.style.transitionDuration = '0ms';
+      const { left, width } = source.getBoundingClientRect();
+      bar.style.transform = `translate(${left}px, ${e.pageY}px)`;
+      bar.style.width = `${width}px`;
+      tree.append(bar);
+
 
       clone = source.cloneNode(true);
       clone.classList.add('is-clone-dragging');
 
       tree.append(clone);
       tree.addEventListener('mouseover', mouseover);
+
       document.addEventListener('mousemove', mousemove, { passive: true });
-      document.addEventListener('mouseup', mouseup);
+      document.addEventListener('mouseup', mouseup, { passive: true });
     });
 
 
@@ -63,20 +88,31 @@ class Tree {
 
 
     function mousemove(e){
-      // console.log('mousemove!');
+      console.log('mousemove!');
       // INSTEAD OF MOUSEOVER CONSIDER THIS TO GET dropzone and prevDropzone SINCE I'M ALREADY DOING THIS
+
+      diffX = Math.abs(e.pageX - startX);
+      diffY = Math.abs(e.pageY - startY);
+
+      if (diffX < delta && diffY < delta) {
+        console.log('snap hasnt been met yet');
+        dragging = false;
+        return;
+      }
+
+      dragging = true;
 
       source.classList.add('is-disabled-while-dragging');
 
       clone.style.transform = `translate(${e.pageX + 20}px, ${e.pageY + 20}px)`;
-      clone.style.left = '0';
-      clone.style.top = '0';
       clone.style.opacity = '1';
+
 
       const overEl = document.elementFromPoint(e.pageX, e.pageY);
 
       if (overEl !== tree && !tree.contains(overEl)) {
-        console.log('outside of tree');
+        // moving outside of tree
+        // console.log('outside of tree');
         return;
       }
 
@@ -125,7 +161,16 @@ class Tree {
 
 
     function mouseup(e) {
-      console.log('mouseup!');
+      if (!dragging) {
+        // Click!
+        console.log('snap hasnt been met yet');
+        cleanup();
+        return;
+      }
+
+      // console.log('mouseup!');
+      // MAKE SURE A DRAG PAST A THRESHOLD HAPPENED SO CLICKS DONT TRIGGER A CRUD POST
+
       // handles use case where drop outside of dropzone zone
       // in which case it'll drop before or after prevDropzone
       dropzone = dropzone || prevDropzone;
@@ -145,17 +190,25 @@ class Tree {
 
 
     function moveBar(pos) {
-      if (!bar) {
-        bar = document.createElement('div');
-        bar.classList.add('tree-bar');
-        // bar.style.transitionDuration = '0ms';
-        tree.append(bar);
-      }
-
       bar.style.width = `${pos.width}px`;
       bar.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+      bar.style.opacity = '1';
       // bar.style.transitionDuration = '400ms';
     }
+
+    // function moveBar(pos) {
+    //   if (!bar) {
+    //     bar = document.createElement('div');
+    //     bar.classList.add('tree-bar');
+    //     // bar.style.transitionDuration = '0ms';
+    //     // bar.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+    //     tree.append(bar);
+    //   }
+
+    //   bar.style.width = `${pos.width}px`;
+    //   bar.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+    //   // bar.style.transitionDuration = '400ms';
+    // }
 
 
     function cleanup() {
@@ -171,7 +224,6 @@ class Tree {
 
       // delete empty ols
       [...tree.querySelectorAll('ol')]
-      // [...document.querySelectorAll('.tree-holder > ol ol')]
         .filter((ol) => !ol.children.length)
         .forEach((ol) => ol.remove());
 
@@ -184,7 +236,6 @@ class Tree {
       document.removeEventListener('mousemove', mousemove);
       document.removeEventListener('mouseup', mouseup);
     }
-
   }
 
 
