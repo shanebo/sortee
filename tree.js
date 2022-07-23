@@ -111,11 +111,11 @@ class Tree {
     }
 
 
-    function mouseup(e) {
-      // console.log('mouseup!');
+    function mouseup() {
+      console.log('mouseup!');
 
       if (!dragging) {
-        // Click!
+        // click, so cleanup
         cleanup();
         return;
       }
@@ -135,13 +135,6 @@ class Tree {
       source.classList.add('is-moved');
       cleanup();
       // serialize();
-    }
-
-
-    // is dragging
-    function showIndicators() {
-      // set clone opacity
-      // set source ghosted class
     }
 
 
@@ -196,24 +189,34 @@ class Tree {
     }
 
 
-    function removeEmptyOls() {
-      [...tree.querySelectorAll('ol')]
-        .filter((ol) => !ol.children.length)
-        .forEach((ol) => ol.remove());
+    // is dragging
+    function showIndicators() {
+      // set clone opacity
+      // set source ghosted class
     }
 
-    // remove indicators
 
-    function cleanup() {
-      console.log('cleanup!!');
-
+    function removeIndicators() {
       bar.remove();
       clone.remove();
       source.classList.remove('is-disabled-while-dragging');
       setTimeout(function(){
         source.classList.remove('is-moved');
       }, 800);
+    }
 
+
+    function removeEmptyOls() {
+      [...tree.querySelectorAll('ol')]
+        .filter((ol) => !ol.children.length)
+        .forEach((ol) => ol.remove());
+    }
+
+
+    function cleanup() {
+      console.log('cleanup!!');
+
+      removeIndicators();
       removeEmptyOls();
 
       tree.removeEventListener('mouseover', mouseover);
