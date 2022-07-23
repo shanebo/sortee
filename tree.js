@@ -26,6 +26,9 @@ class Tree {
       console.log('mousedown');
 
       dragging = false;
+      dropzone = false;
+      prevDropzone = false;
+      changes = false;
       startX = e.pageX;
       startY = e.pageY;
       source = getDropzone(e.target);
@@ -51,7 +54,7 @@ class Tree {
 
       dragging = checkDragState(e);
 
-      if (!dragging || !dropzone) {
+      if (!dragging) {
         return;
       }
 
@@ -60,17 +63,15 @@ class Tree {
       clone.style.transform = `translate(${e.pageX + 20}px, ${e.pageY + 20}px)`;
       clone.style.opacity = '1';
 
-      // INSTEAD OF MOUSEOVER CONSIDER THIS TO GET dropzone and prevDropzone SINCE I'M ALREADY DOING THIS
-      const overEl = document.elementFromPoint(e.pageX, e.pageY);
+      // const noChanges
+      // noValidDropzone
 
-      if (overEl !== tree && !tree.contains(overEl)) {
-        // moving outside of tree
-        console.log('outside of tree');
-        return;
-      }
+      const target = document.elementFromPoint(e.pageX, e.pageY);
 
-      if (source === dropzone || source.contains(dropzone)) {
-        // prevent dropping on self or descendents
+      if (!dropzone || source === dropzone || source.contains(dropzone) || (target !== tree && !tree.contains(target))) {
+        // add ability to drop outside of tree only if the bar was at very top or very bottom
+        console.log('no dropzone!');
+        bar.style.opacity = '0';
         changes = false;
         return;
       }
