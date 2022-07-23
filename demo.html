@@ -10,14 +10,14 @@
 
 <body>
   <div class="tree-holder">
-    <ol class="tree" id="tree">
+    <ol class="tree" data-id="list">
       <li data-id="1"><div>About</div></li>
       <li data-id="2"><div>Work</div></li>
       <li data-id="4"><div>Methodology</div>
-        <ol>
+        <ol data-id="4">
           <li data-id="15"><div>Dude</div></li>
           <li data-id="20"><div>Philosophy</div>
-            <ol>
+            <ol data-id="20">
               <li data-id="10"><div>Design</div></li>
               <li data-id="7"><div>Development</div></li>
             </ol>
@@ -32,7 +32,31 @@
   </div>
 
   <script>
-    new Tree(document.querySelector('.tree'));
+    new Tree({
+      list: document.querySelector('.tree'),
+      onSort: (changes) => {
+        console.log(changes);
+
+        const previousVersion = '[{"id":"10","parent":{},"parentId":"20","children":[],"el":{}},{"id":"7","parent":{},"parentId":"20","children":[],"el":{}},{"id":"15","parent":{},"parentId":"4","children":[],"el":{}},{"id":"20","parent":{},"parentId":"4","children":["10","7"],"el":{}},{"id":"13","parent":{},"parentId":"4","children":[],"el":{}},{"id":"21","parent":{},"parentId":"4","children":[],"el":{}},{"id":"2","parent":{},"parentId":"list","children":[],"el":{}},{"id":"1","parent":{},"parentId":"list","children":[],"el":{}},{"id":"4","parent":{},"parentId":"list","children":["15","20","13","21"],"el":{}},{"id":"9","parent":{},"parentId":"list","children":[],"el":{}},{"id":"6","parent":{},"parentId":"list","children":[],"el":{}},{"id":"list","parent":null,"children":["2","1","4","9","6"],"el":{}}]'
+
+        if (JSON.stringify(changes) !== previousVersion) {
+          alert('wrong serialize output');
+        }
+
+        console.log(JSON.stringify(changes));
+
+        // fetch('/sort', {
+        //   method: 'POST',
+        //   body: JSON.stringify(flattenLayersFromInnerToOuter),
+        //   headers:{
+        //     'Content-Type': 'application/json'
+        //   }
+        // })
+        // .then(res => res.json())
+        // .then(response => console.log(response))
+        // .catch(error => console.error(error));
+      }
+    });
   </script>
 
 </body>

@@ -1,11 +1,20 @@
 class Tree {
-  constructor(tree) {
+  constructor(options) {
     // options needed
     // serialize function?
     // ol = the root ol list element
     // method that can enable custom putting things on the created ols. this method will return the ol by which you can attach classes ids, data-ids, etc.
     // an init function that Initialises (enables) the drag and drop functionality by adding all the necessary event listeners and list item attributes. This is required when a list has been rendered with the init option set to false.
     // a destroy or remove or teardown method that Disables the drag and drop functionality by removing all the event listeners and setting the draggable attribute to false on the list items.
+
+    const defaults = {
+      onSort: (changes) => {
+        console.log(changes);
+      }
+    };
+
+    const opts = { ...defaults, ...options };
+    const tree = opts.list;
 
 
     let source = null;
@@ -130,7 +139,7 @@ class Tree {
       }
 
       source.classList.add('is-moved');
-      // serialize();
+      serialize();
     }
 
 
@@ -222,6 +231,35 @@ class Tree {
       document.removeEventListener('mouseup', mouseup);
     }
 
+
+    function serialize() {
+      // get lis and their ids and parentIds from innermost to outermost including the tree ol
+      const changes = [tree]
+        .concat([...tree.querySelectorAll('ol')])
+        .reverse()
+        .map((ol) => {
+          return [...ol.querySelectorAll(':scope > li')].map((li) => {
+            return {
+              id: li.dataset.id,
+              parent: ol.closest('li') || ol.closest('ol'),
+              parentId: ol.closest('li') ? ol.closest('li').dataset.id : tree.dataset.id,
+              children: [...li.querySelectorAll(':scope > ol > li')].map(childLi => childLi.dataset.id),
+              el: li
+            };
+          });
+        });
+
+      // add root ol to array
+      changes.push({
+        id: tree.dataset.id,
+        parent: null,
+        parentId: tree.dataset.parentId,
+        children: [...tree.querySelectorAll(':scope > li')].map(childLi => childLi.dataset.id),
+        el: tree
+      });
+
+      return opts.onSort(changes.flat());
+    }
 
     // wrap this inside init
     tree.addEventListener('mousedown', mousedown);
