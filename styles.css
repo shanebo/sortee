@@ -14,15 +14,10 @@ body {
   text-rendering: optimizeLegibility;
   background-color: black;
   height: 100vh;
+  padding: 50px;
 }
 
-.tree-holder {
-  padding: 50px;
-  width: 300px;
-  position: fixed;
-  left: 100px;
-  background-color: #1A1B23;
-
+ol.tree {
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
