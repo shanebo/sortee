@@ -81,34 +81,25 @@ class Tree {
     }
 
 
-    // function thresholdMet() {
-    //   deltaX = Math.abs(e.pageX - startX);
-    //   deltaY = Math.abs(e.pageY - startY);
-    //   return deltaX < dragThreshold && deltaY < dragThreshold;
-    // }
+    function checkDragState(e) {
+      const deltaX = Math.abs(e.pageX - startX);
+      const deltaY = Math.abs(e.pageY - startY);
+      return deltaX > dragThreshold || deltaY > dragThreshold;
+    }
 
 
     function mousemove(e){
       console.log('mousemove!');
-      // INSTEAD OF MOUSEOVER CONSIDER THIS TO GET dropzone and prevDropzone SINCE I'M ALREADY DOING THIS
+      dragging = checkDragState(e);
 
-      const deltaX = Math.abs(e.pageX - startX);
-      const deltaY = Math.abs(e.pageY - startY);
+      if (!dragging) return;
 
-      if (deltaX < dragThreshold && deltaY < dragThreshold) {
-        console.log('snap hasnt been met yet');
-        dragging = false;
-        return;
-      }
-
-      dragging = true;
-
+      // this is where threshhold has been met and time to display indicators
       source.classList.add('is-disabled-while-dragging');
-
       clone.style.transform = `translate(${e.pageX + 20}px, ${e.pageY + 20}px)`;
       clone.style.opacity = '1';
 
-
+      // INSTEAD OF MOUSEOVER CONSIDER THIS TO GET dropzone and prevDropzone SINCE I'M ALREADY DOING THIS
       const overEl = document.elementFromPoint(e.pageX, e.pageY);
 
       if (overEl !== tree && !tree.contains(overEl)) {
