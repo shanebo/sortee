@@ -13,7 +13,7 @@ class Tree {
     let clone = null;
     let dropzone = null;
     let prevDropzone = null;
-    let drop = null;
+    let changes = null;
     let padding = 18 + 10;
     let barHalfHeight = 4;
     let dragThreshold = 6;
@@ -75,7 +75,7 @@ class Tree {
 
       if (source === dropzone || source.contains(dropzone)) {
         // prevent dropping on self or descendents
-        drop = false;
+        changes = false;
         return;
       }
 
@@ -87,7 +87,7 @@ class Tree {
         const makeChild = e.pageX > left + nestThreshold;
         const offset = makeChild ? padding : 0;
 
-        drop = {
+        changes = {
           where: 'afterend',
           makeChild
         };
@@ -99,7 +99,7 @@ class Tree {
         });
 
       } else if (e.pageY < dropzoneCenterY) {
-        drop = {
+        changes = {
           where: 'beforebegin'
         };
 
@@ -125,12 +125,16 @@ class Tree {
       // in which case it'll drop before or after prevDropzone
       dropzone = dropzone || prevDropzone;
 
-      if (drop && drop.makeChild) {
+      if (changes && changes.makeChild) {
         const ol = getOrAddOl(dropzone);
         dropzone.append(ol);
         ol.append(source);
-      } else if (drop) {
-        dropzone.insertAdjacentElement(drop.where, source);
+      } else if (changes) {
+        dropzone.insertAdjacentElement(changes.where, source);
+      }
+
+      if (!changes) {
+        alert('no drop!');
       }
 
       source.classList.add('is-moved');
