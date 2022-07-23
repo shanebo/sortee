@@ -47,7 +47,8 @@ class Tree {
 
 
     function mousemove(e){
-      console.log('mousemove!');
+      // console.log('mousemove!');
+
       dragging = checkDragState(e);
 
       if (!dragging) {
