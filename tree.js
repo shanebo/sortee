@@ -67,10 +67,13 @@ class Tree {
       // noValidDropzone
 
       const target = document.elementFromPoint(e.pageX, e.pageY);
+      const noValidDropzone = !dropzone
+        || source === dropzone // self
+        || source.contains(dropzone) // children
+        || (target !== tree && !tree.contains(target)); // outside tree
 
-      if (!dropzone || source === dropzone || source.contains(dropzone) || (target !== tree && !tree.contains(target))) {
+      if (noValidDropzone) {
         // add ability to drop outside of tree only if the bar was at very top or very bottom
-        console.log('no dropzone!');
         bar.style.opacity = '0';
         changes = false;
         return;
