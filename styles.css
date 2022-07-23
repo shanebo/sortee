@@ -53,13 +53,13 @@ ol.tree li {
   color: white;
 }
 
-ol.tree li.is-disabled-while-dragging {
+ol.tree li.is-drag-source {
   opacity: 0.2;
   transition: opacity var(--duration) var(--easing);
   will-change: opacity;
 }
 
-ol.tree li.is-clone-dragging {
+ol.tree li.is-drag-clone {
   position: fixed;
   z-index: 30000;
   opacity: 0;

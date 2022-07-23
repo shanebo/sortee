@@ -51,12 +51,12 @@ class Tree {
 
       dragging = checkDragState(e);
 
-      if (!dragging) {
+      if (!dragging || !dropzone) {
         return;
       }
 
       // this is where threshhold has been met and time to display indicators
-      source.classList.add('is-disabled-while-dragging');
+      source.classList.add('is-drag-source');
       clone.style.transform = `translate(${e.pageX + 20}px, ${e.pageY + 20}px)`;
       clone.style.opacity = '1';
 
@@ -65,12 +65,7 @@ class Tree {
 
       if (overEl !== tree && !tree.contains(overEl)) {
         // moving outside of tree
-        // console.log('outside of tree');
-        return;
-      }
-
-      if (!dropzone) {
-        // no dropzone so stop
+        console.log('outside of tree');
         return;
       }
 
@@ -170,7 +165,7 @@ class Tree {
 
     function addClone() {
       clone = source.cloneNode(true);
-      clone.classList.add('is-clone-dragging');
+      clone.classList.add('is-drag-clone');
       tree.append(clone);
     }
 
@@ -200,7 +195,7 @@ class Tree {
     function removeIndicators() {
       bar.remove();
       clone.remove();
-      source.classList.remove('is-disabled-while-dragging');
+      source.classList.remove('is-drag-source');
       setTimeout(function(){
         source.classList.remove('is-moved');
       }, 800);
