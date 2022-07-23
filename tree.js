@@ -49,11 +49,9 @@ class Tree {
     let drop = null;
     let padding = 18 + 10;
     let barHalfHeight = 4;
-    let delta = 6;
+    let dragThreshold = 6;
     let startX = 0;
     let startY = 0;
-    let diffX = 0;
-    let diffY = 0;
     let dragging = false;
 
 
@@ -63,10 +61,6 @@ class Tree {
       dragging = false;
       startX = e.pageX;
       startY = e.pageY;
-
-      // this is the list item that is ghosted and being sorted
-      // this is not the clone that is following the mouse
-      // it's the one that is locked in its original location
       source = getLi(e.target);
 
       const { left, width } = source.getBoundingClientRect();
@@ -87,14 +81,21 @@ class Tree {
     }
 
 
+    // function thresholdMet() {
+    //   deltaX = Math.abs(e.pageX - startX);
+    //   deltaY = Math.abs(e.pageY - startY);
+    //   return deltaX < dragThreshold && deltaY < dragThreshold;
+    // }
+
+
     function mousemove(e){
       console.log('mousemove!');
       // INSTEAD OF MOUSEOVER CONSIDER THIS TO GET dropzone and prevDropzone SINCE I'M ALREADY DOING THIS
 
-      diffX = Math.abs(e.pageX - startX);
-      diffY = Math.abs(e.pageY - startY);
+      const deltaX = Math.abs(e.pageX - startX);
+      const deltaY = Math.abs(e.pageY - startY);
 
-      if (diffX < delta && diffY < delta) {
+      if (deltaX < dragThreshold && deltaY < dragThreshold) {
         console.log('snap hasnt been met yet');
         dragging = false;
         return;
@@ -198,9 +199,9 @@ class Tree {
     }
 
 
-    function moveBar(pos) {
-      bar.style.width = `${pos.width}px`;
-      bar.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
+    function moveBar({ x, y, width }) {
+      bar.style.width = `${width}px`;
+      bar.style.transform = `translate(${x}px, ${y}px)`;
       bar.style.opacity = '1';
     }
 
