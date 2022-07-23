@@ -33,6 +33,7 @@ class Tree {
 
     function mousedown(e) {
       console.log('mousedown');
+      // e.preventDefault();
 
       dragging = false;
       dropzone = false;
@@ -62,6 +63,8 @@ class Tree {
       // console.log('mousemove!');
       dragging = checkDragState(e);
 
+      // e.preventDefault();
+
       if (!dragging) {
         return;
       }
@@ -88,7 +91,7 @@ class Tree {
       const dropzoneCenterY = top + (height / 2);
 
       if (e.pageY >= dropzoneCenterY) {
-        const nestThreshold = width / 3;
+        const nestThreshold = width / 5;
         const makeChild = e.pageX > left + nestThreshold;
         const barIndentX = makeChild ? padding : 0;
 
