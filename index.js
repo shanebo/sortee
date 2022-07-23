@@ -244,10 +244,10 @@ class Tree {
           return [...ol.querySelectorAll(':scope > li')].map((li) => {
             return {
               id: li.dataset.id,
-              parent: ol.closest('li') || ol.closest('ol'),
+              // parent: ol.closest('li') || ol.closest('ol'),
               parentId: ol.closest('li') ? ol.closest('li').dataset.id : tree.dataset.id,
               children: [...li.querySelectorAll(':scope > ol > li')].map(childLi => childLi.dataset.id),
-              el: li
+              // el: li
             };
           });
         });
@@ -255,10 +255,10 @@ class Tree {
       // add root ol to array
       changes.push({
         id: tree.dataset.id,
-        parent: null,
+        // parent: null,
         parentId: tree.dataset.parentId,
         children: [...tree.querySelectorAll(':scope > li')].map(childLi => childLi.dataset.id),
-        el: tree
+        // el: tree
       });
 
       return opts.onSort(changes.flat());
