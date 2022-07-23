@@ -7,6 +7,7 @@ class Tree {
     // an init function that Initialises (enables) the drag and drop functionality by adding all the necessary event listeners and list item attributes. This is required when a list has been rendered with the init option set to false.
     // a destroy or remove or teardown method that Disables the drag and drop functionality by removing all the event listeners and setting the draggable attribute to false on the list items.
 
+
     let source = null;
     let bar = null;
     let clone = null;
