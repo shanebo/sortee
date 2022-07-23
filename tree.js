@@ -179,13 +179,15 @@ class Tree {
     function getOrAddOl(dropzone) {
       const ol = dropzone.querySelector('ol');
 
-      if (ol) {
-        return ol;
-      } else {
+      if (!ol) {
         const newOl = document.createElement('ol');
-        newOl.classList.add('tree', 'Tree'); // update this to not put a class on it?
+        // callback option to mutate the created ol
+        // eg put a custom class or data-id etc. as app needs
+        newOl.classList.add('tree', 'Tree');
         return newOl;
       }
+
+      return ol;
     }
 
 
