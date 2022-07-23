@@ -88,7 +88,7 @@ class Tree {
         const offset = makeChild ? padding : 0;
 
         changes = {
-          where: 'afterend',
+          insert: 'afterend',
           makeChild
         };
 
@@ -100,7 +100,7 @@ class Tree {
 
       } else if (e.pageY < dropzoneCenterY) {
         changes = {
-          where: 'beforebegin'
+          insert: 'beforebegin'
         };
 
         moveBar({
@@ -113,16 +113,14 @@ class Tree {
 
 
     function mouseup() {
-      console.log('mouseup!');
-
       cleanup();
 
       if (!dragging || !changes) {
         return;
       }
 
-      // handles use case where drop outside of dropzone zone
-      // in which case it'll drop before or after prevDropzone
+      // handles use case where drop is outside
+      // of dropzone so use prevDropzone as dropzone
       dropzone = dropzone || prevDropzone;
 
       if (changes.makeChild) {
@@ -130,7 +128,7 @@ class Tree {
         dropzone.append(ol);
         ol.append(source);
       } else {
-        dropzone.insertAdjacentElement(changes.where, source);
+        dropzone.insertAdjacentElement(changes.insert, source);
       }
 
       source.classList.add('is-moved');
