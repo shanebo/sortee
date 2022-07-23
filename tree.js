@@ -117,7 +117,7 @@ class Tree {
 
       cleanup();
 
-      if (!dragging) {
+      if (!dragging || !changes) {
         return;
       }
 
@@ -125,16 +125,12 @@ class Tree {
       // in which case it'll drop before or after prevDropzone
       dropzone = dropzone || prevDropzone;
 
-      if (changes && changes.makeChild) {
+      if (changes.makeChild) {
         const ol = getOrAddOl(dropzone);
         dropzone.append(ol);
         ol.append(source);
-      } else if (changes) {
+      } else {
         dropzone.insertAdjacentElement(changes.where, source);
-      }
-
-      if (!changes) {
-        alert('no drop!');
       }
 
       source.classList.add('is-moved');
