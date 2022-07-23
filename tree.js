@@ -1,4 +1,4 @@
-function getOrMakeOl(dropzone) {
+function getOrAddOl(dropzone) {
   const ol = dropzone.querySelector('ol');
 
   if (ol) {
@@ -11,25 +11,11 @@ function getOrMakeOl(dropzone) {
 }
 
 
-function getLi(target) {
-  return target.tagName === 'LI' ? target : target.closest('li');
+function getDropzone(target) {
+  return target.tagName === 'LI'
+    ? target
+    : target.closest('li');
 }
-
-
-
-
-// Idea
-/*
-mousedown
-- set starts
-- create clone
-- create bar
-- attached move event
-
-
-
-
-*/
 
 
 class Tree {
@@ -58,10 +44,10 @@ class Tree {
     function mousedown(e) {
       console.log('mousedown');
 
-      dragging = false;
+      // dragging = false;
       startX = e.pageX;
       startY = e.pageY;
-      source = getLi(e.target);
+      source = getDropzone(e.target);
 
       const { left, width } = source.getBoundingClientRect();
 
@@ -77,7 +63,7 @@ class Tree {
     function mouseover(e){
       // console.log('mouseover');
       prevDropzone = dropzone;
-      dropzone = getLi(e.target);
+      dropzone = getDropzone(e.target);
     }
 
 
@@ -153,22 +139,20 @@ class Tree {
 
 
     function mouseup(e) {
+      // console.log('mouseup!');
+
       if (!dragging) {
         // Click!
-        console.log('snap hasnt been met yet');
         cleanup();
         return;
       }
-
-      // console.log('mouseup!');
-      // MAKE SURE A DRAG PAST A THRESHOLD HAPPENED SO CLICKS DONT TRIGGER A CRUD POST
 
       // handles use case where drop outside of dropzone zone
       // in which case it'll drop before or after prevDropzone
       dropzone = dropzone || prevDropzone;
 
       if (drop && drop.makeChild) {
-        const ol = getOrMakeOl(dropzone);
+        const ol = getOrAddOl(dropzone);
         dropzone.append(ol);
         ol.append(source);
       } else if (drop) {
@@ -204,26 +188,25 @@ class Tree {
     }
 
 
-    function cleanup() {
-      console.log('cleanup!!');
-
-      if (bar) {
-        bar.remove();
-        bar = null;
-      }
-
-      clone.remove();
-      source.classList.remove('is-disabled-while-dragging');
-
-      // delete empty ols
+    function removeEmptyOls() {
       [...tree.querySelectorAll('ol')]
         .filter((ol) => !ol.children.length)
         .forEach((ol) => ol.remove());
+    }
 
-      // remove class that highlights moved li
+
+    function cleanup() {
+      console.log('cleanup!!');
+
+      bar.remove();
+      clone.remove();
+
+      source.classList.remove('is-disabled-while-dragging');
       setTimeout(function(){
-        [...tree.querySelectorAll('li')].forEach((li) => li.classList.remove('is-moved'));
+        source.classList.remove('is-moved');
       }, 800);
+
+      removeEmptyOls();
 
       tree.removeEventListener('mouseover', mouseover);
       document.removeEventListener('mousemove', mousemove);
@@ -234,6 +217,8 @@ class Tree {
     // wrap this inside init
     tree.addEventListener('mousedown', mousedown);
   }
+
+
 
 
 
