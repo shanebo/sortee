@@ -1,0 +1,10 @@
+{
+  "name": "sortee",
+  "description": "List sorting with dynamic nested list support.",
+  "version": "0.1.0",
+  "main": "./index",
+  "repository": "git://github.com/shanebo/sortee.git",
+  "author": "Shane Thacker <shane@steadymade.com>",
+  "license": "MIT",
+  "dependencies": {}
+}
