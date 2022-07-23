@@ -16,6 +16,22 @@ function getLi(target) {
 }
 
 
+
+
+// Idea
+/*
+mousedown
+- set starts
+- create clone
+- create bar
+- attached move event
+
+
+
+
+*/
+
+
 class Tree {
   constructor(tree) {
     // options needed
@@ -41,9 +57,7 @@ class Tree {
     let dragging = false;
 
 
-
-    tree.addEventListener('mousedown', (e) => {
-      e.preventDefault();
+    function mousedown(e) {
       console.log('mousedown');
 
       dragging = false;
@@ -55,29 +69,15 @@ class Tree {
       // it's the one that is locked in its original location
       source = getLi(e.target);
 
-      // moveBar({
-      //   x: e.pageX,
-      //   y: e.pageY
-      // });
-
-      bar = document.createElement('div');
-      bar.classList.add('tree-bar');
-      // bar.style.transitionDuration = '0ms';
       const { left, width } = source.getBoundingClientRect();
-      bar.style.transform = `translate(${left}px, ${e.pageY}px)`;
-      bar.style.width = `${width}px`;
-      tree.append(bar);
 
+      addBar({ x: left, y: e.pageY, width });
+      addClone();
 
-      clone = source.cloneNode(true);
-      clone.classList.add('is-clone-dragging');
-
-      tree.append(clone);
       tree.addEventListener('mouseover', mouseover);
-
       document.addEventListener('mousemove', mousemove, { passive: true });
       document.addEventListener('mouseup', mouseup, { passive: true });
-    });
+    }
 
 
     function mouseover(e){
@@ -189,26 +189,27 @@ class Tree {
     }
 
 
+    function addBar({ x, y, width }) {
+      bar = document.createElement('div');
+      bar.classList.add('tree-bar');
+      bar.style.transform = `translate(${x}px, ${y}px)`;
+      bar.style.width = `${width}px`;
+      tree.append(bar);
+    }
+
+
     function moveBar(pos) {
       bar.style.width = `${pos.width}px`;
       bar.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
       bar.style.opacity = '1';
-      // bar.style.transitionDuration = '400ms';
     }
 
-    // function moveBar(pos) {
-    //   if (!bar) {
-    //     bar = document.createElement('div');
-    //     bar.classList.add('tree-bar');
-    //     // bar.style.transitionDuration = '0ms';
-    //     // bar.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
-    //     tree.append(bar);
-    //   }
 
-    //   bar.style.width = `${pos.width}px`;
-    //   bar.style.transform = `translate(${pos.x}px, ${pos.y}px)`;
-    //   // bar.style.transitionDuration = '400ms';
-    // }
+    function addClone() {
+      clone = source.cloneNode(true);
+      clone.classList.add('is-clone-dragging');
+      tree.append(clone);
+    }
 
 
     function cleanup() {
@@ -236,6 +237,10 @@ class Tree {
       document.removeEventListener('mousemove', mousemove);
       document.removeEventListener('mouseup', mouseup);
     }
+
+
+    // wrap this inside init
+    tree.addEventListener('mousedown', mousedown);
   }
 
 
