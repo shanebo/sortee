@@ -57,7 +57,7 @@
       onSort: (changes) => {
         console.log(changes);
 
-        const previousVersion = '[{"id":"10","parent":{},"parentId":"20","children":[],"el":{}},{"id":"7","parent":{},"parentId":"20","children":[],"el":{}},{"id":"15","parent":{},"parentId":"4","children":[],"el":{}},{"id":"20","parent":{},"parentId":"4","children":["10","7"],"el":{}},{"id":"13","parent":{},"parentId":"4","children":[],"el":{}},{"id":"21","parent":{},"parentId":"4","children":[],"el":{}},{"id":"2","parent":{},"parentId":"list","children":[],"el":{}},{"id":"1","parent":{},"parentId":"list","children":[],"el":{}},{"id":"4","parent":{},"parentId":"list","children":["15","20","13","21"],"el":{}},{"id":"9","parent":{},"parentId":"list","children":[],"el":{}},{"id":"6","parent":{},"parentId":"list","children":[],"el":{}},{"id":"list","parent":null,"children":["2","1","4","9","6"],"el":{}}]'
+        const previousVersion = '[{"id":"10","parentId":"20","children":[]},{"id":"7","parentId":"20","children":[]},{"id":"15","parentId":"4","children":[]},{"id":"20","parentId":"4","children":["10","7"]},{"id":"13","parentId":"4","children":[]},{"id":"21","parentId":"4","children":[]},{"id":"2","parentId":"list","children":[]},{"id":"1","parentId":"list","children":[]},{"id":"4","parentId":"list","children":["15","20","13","21"]},{"id":"9","parentId":"list","children":[]},{"id":"6","parentId":"list","children":[]},{"id":"list","children":["2","1","4","9","6"]}]';
 
         if (JSON.stringify(changes) !== previousVersion) {
           alert('wrong serialize output');
