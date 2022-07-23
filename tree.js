@@ -269,57 +269,59 @@ class Tree {
 
 
 
-  serialize() {
-    // MAKE THIS AN OPTION FOR YOUR OWN SERIALIZE ON SORT METHOD
-    // RIGHT STRUCTURE
-    const serial = [...document.querySelectorAll('.tree-holder ol')].reverse();
+  // serialize() {
+  //   // MAKE THIS AN OPTION FOR YOUR OWN SERIALIZE ON SORT METHOD
+  //   // RIGHT STRUCTURE
+  //   const serial = [...document.querySelectorAll('.tree-holder ol')].reverse();
 
-    const layers = serial.map((ol) => {
-      // I could make the return conditional to account for root/highest ol
-      // if (!ol.closest('li')) {
-      //   console.log('\n\n\n');
-      //   console.log('at root list!');
-      //   console.log([...ol.querySelectorAll(':scope > li')]);
-      //   console.log('\n\n\n');
-      // }
+  //   const layers = serial.map((ol) => {
+  //     // I could make the return conditional to account for root/highest ol
+  //     // if (!ol.closest('li')) {
+  //     //   console.log('\n\n\n');
+  //     //   console.log('at root list!');
+  //     //   console.log([...ol.querySelectorAll(':scope > li')]);
+  //     //   console.log('\n\n\n');
+  //     // }
 
-      return [...ol.querySelectorAll(':scope > li')].map((li) => {
-        // return [...ol.children].map((li) => {
-        return {
-          id: li.dataset.id,
-          // parent: ol.closest('li') || 'list',
-          parentId: ol.closest('li') ? ol.closest('li').dataset.id : document.querySelector('.tree-holder > ol').dataset.id, // root layer if no parent li
-          children: [...li.querySelectorAll(':scope > ol > li')].map(childLi => childLi.dataset.id),
-          // el: li
-        };
-      });
-    });
+  //     return [...ol.querySelectorAll(':scope > li')].map((li) => {
+  //       // return [...ol.children].map((li) => {
+  //       return {
+  //         id: li.dataset.id,
+  //         // parent: ol.closest('li') || 'list',
+  //         parentId: ol.closest('li') ? ol.closest('li').dataset.id : document.querySelector('.tree-holder > ol').dataset.id, // root layer if no parent li
+  //         children: [...li.querySelectorAll(':scope > ol > li')].map(childLi => childLi.dataset.id),
+  //         // el: li
+  //       };
+  //     });
+  //   });
 
-    // console.log(layers);
+  //   // console.log(layers);
 
-    const flattenLayersFromInnerToOuter = layers.flat();
-    // add root ol to array
-    flattenLayersFromInnerToOuter.push({
-      id: document.querySelector('.tree-holder > ol').dataset.id,
-      // parent: null,
-      parentId: document.querySelector('.tree-holder > ol').dataset.parentId,
-      children: [...document.querySelectorAll('.tree-holder > ol > li')].map(childLi => childLi.dataset.id),
-      // el: document.querySelector('.tree')
-    });
-
-
-    // console.log(flattenLayersFromInnerToOuter);
+  //   const flattenLayersFromInnerToOuter = layers.flat();
+  //   // add root ol to array
+  //   flattenLayersFromInnerToOuter.push({
+  //     id: document.querySelector('.tree-holder > ol').dataset.id,
+  //     // parent: null,
+  //     parentId: document.querySelector('.tree-holder > ol').dataset.parentId,
+  //     children: [...document.querySelectorAll('.tree-holder > ol > li')].map(childLi => childLi.dataset.id),
+  //     // el: document.querySelector('.tree')
+  //   });
 
 
-    // fetch('/sort', {
-    //   method: 'POST',
-    //   body: JSON.stringify(flattenLayersFromInnerToOuter),
-    //   headers:{
-    //     'Content-Type': 'application/json'
-    //   }
-    // })
-    // .then(res => res.json())
-    // .then(response => console.log(response))
-    // .catch(error => console.error(error));
-  }
+  //   // console.log(flattenLayersFromInnerToOuter);
+
+
+  //   // fetch('/sort', {
+  //   //   method: 'POST',
+  //   //   body: JSON.stringify(flattenLayersFromInnerToOuter),
+  //   //   headers:{
+  //   //     'Content-Type': 'application/json'
+  //   //   }
+  //   // })
+  //   // .then(res => res.json())
+  //   // .then(response => console.log(response))
+  //   // .catch(error => console.error(error));
+  // }
 }
+
+
