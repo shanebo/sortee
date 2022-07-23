@@ -1,23 +1,3 @@
-function getOrAddOl(dropzone) {
-  const ol = dropzone.querySelector('ol');
-
-  if (ol) {
-    return ol;
-  } else {
-    const newOl = document.createElement('ol');
-    newOl.classList.add('tree', 'Tree'); // update this to not put a class on it?
-    return newOl;
-  }
-}
-
-
-function getDropzone(target) {
-  return target.tagName === 'LI'
-    ? target
-    : target.closest('li');
-}
-
-
 class Tree {
   constructor(tree) {
     // options needed
@@ -49,9 +29,7 @@ class Tree {
       startY = e.pageY;
       source = getDropzone(e.target);
 
-      const { left, width } = source.getBoundingClientRect();
-
-      addBar({ x: left, y: e.pageY, width });
+      addBar(e);
       addClone();
 
       tree.addEventListener('mouseover', mouseover);
@@ -67,18 +45,13 @@ class Tree {
     }
 
 
-    function checkDragState(e) {
-      const deltaX = Math.abs(e.pageX - startX);
-      const deltaY = Math.abs(e.pageY - startY);
-      return deltaX > dragThreshold || deltaY > dragThreshold;
-    }
-
-
     function mousemove(e){
       console.log('mousemove!');
       dragging = checkDragState(e);
 
-      if (!dragging) return;
+      if (!dragging) {
+        return;
+      }
 
       // this is where threshhold has been met and time to display indicators
       source.classList.add('is-disabled-while-dragging');
@@ -165,10 +138,32 @@ class Tree {
     }
 
 
-    function addBar({ x, y, width }) {
+    // is dragging
+    function showIndicators() {
+      // set clone opacity
+      // set source ghosted class
+    }
+
+
+    function getDropzone(target) {
+      return target.tagName === 'LI'
+        ? target
+        : target.closest('li');
+    }
+
+
+    function checkDragState(e) {
+      const deltaX = Math.abs(e.pageX - startX);
+      const deltaY = Math.abs(e.pageY - startY);
+      return deltaX > dragThreshold || deltaY > dragThreshold;
+    }
+
+
+    function addBar(e) {
+      const { left, width } = source.getBoundingClientRect();
       bar = document.createElement('div');
       bar.classList.add('tree-bar');
-      bar.style.transform = `translate(${x}px, ${y}px)`;
+      bar.style.transform = `translate(${left}px, ${e.pageY}px)`;
       bar.style.width = `${width}px`;
       tree.append(bar);
     }
@@ -188,19 +183,32 @@ class Tree {
     }
 
 
+    function getOrAddOl(dropzone) {
+      const ol = dropzone.querySelector('ol');
+
+      if (ol) {
+        return ol;
+      } else {
+        const newOl = document.createElement('ol');
+        newOl.classList.add('tree', 'Tree'); // update this to not put a class on it?
+        return newOl;
+      }
+    }
+
+
     function removeEmptyOls() {
       [...tree.querySelectorAll('ol')]
         .filter((ol) => !ol.children.length)
         .forEach((ol) => ol.remove());
     }
 
+    // remove indicators
 
     function cleanup() {
       console.log('cleanup!!');
 
       bar.remove();
       clone.remove();
-
       source.classList.remove('is-disabled-while-dragging');
       setTimeout(function(){
         source.classList.remove('is-moved');
