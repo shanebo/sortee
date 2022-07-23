@@ -114,9 +114,9 @@ class Tree {
     function mouseup() {
       console.log('mouseup!');
 
+      cleanup();
+
       if (!dragging) {
-        // click, so cleanup
-        cleanup();
         return;
       }
 
@@ -133,7 +133,6 @@ class Tree {
       }
 
       source.classList.add('is-moved');
-      cleanup();
       // serialize();
     }
 
