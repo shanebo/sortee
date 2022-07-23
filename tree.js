@@ -51,7 +51,6 @@ class Tree {
 
     function mousemove(e){
       // console.log('mousemove!');
-
       dragging = checkDragState(e);
 
       if (!dragging) {
@@ -62,9 +61,6 @@ class Tree {
       source.classList.add('is-drag-source');
       clone.style.transform = `translate(${e.pageX + 20}px, ${e.pageY + 20}px)`;
       clone.style.opacity = '1';
-
-      // const noChanges
-      // noValidDropzone
 
       const target = document.elementFromPoint(e.pageX, e.pageY);
       const noValidDropzone = !dropzone
@@ -85,17 +81,19 @@ class Tree {
       if (e.pageY >= dropzoneCenterY) {
         const nestThreshold = width / 3;
         const makeChild = e.pageX > left + nestThreshold;
-        const offset = makeChild ? padding : 0;
+        const barIndentX = makeChild ? padding : 0;
 
         changes = {
           insert: 'afterend',
           makeChild
         };
 
+        // this could be handled inside moveBar by looking up whether makechild or not
+        // also y could be determined by the type of "insert"
         moveBar({
-          x: left + offset,
+          x: left + barIndentX,
           y: top + height - barHalfHeight,
-          width: width - offset
+          width: width - barIndentX
         });
 
       } else if (e.pageY < dropzoneCenterY) {
