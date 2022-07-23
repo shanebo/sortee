@@ -95,6 +95,7 @@ ol.tree li.is-moved {
   height: 8px;
   z-index: 1000;
   opacity: 0;
+  pointer-events: none;
   transition:
     opacity var(--duration) var(--easing),
     transform var(--duration) var(--easing),
