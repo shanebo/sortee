@@ -25,7 +25,7 @@ class Tree {
     function mousedown(e) {
       console.log('mousedown');
 
-      // dragging = false;
+      dragging = false;
       startX = e.pageX;
       startY = e.pageY;
       source = getDropzone(e.target);
