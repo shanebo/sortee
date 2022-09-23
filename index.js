@@ -91,7 +91,8 @@ class Tree {
       const dropzoneCenterY = top + (height / 2);
 
       if (e.pageY >= dropzoneCenterY) {
-        const nestThreshold = width / 5;
+        // const nestThreshold = width / 5;
+        const nestThreshold = 80;
         const makeChild = e.pageX > left + nestThreshold;
         const barIndentX = makeChild ? padding : 0;
 
